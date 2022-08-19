@@ -1,0 +1,13 @@
+@import "./node_modules/buefy/src/scss/utils/_functions.scss";
+
+$primary: #317ada;
+$primary-invert: findColorInvert($primary);
+$primary-light: findLightColor($primary);
+$primary-dark: findDarkColor($primary);
+
+:root {
+    --primary: #{$primary};
+    --primary-invert: #{$primary-invert};
+    --primary-light: #{$primary-light};
+    --primary-dark: #{$primary-dark};
+}
