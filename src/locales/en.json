@@ -1,5 +1,7 @@
 {
     "home": "Home",
     "search": "Search",
-    "catalog": "Catalog"
+    "catalog": "Catalog",
+    "planeCategory": "Plane Category",
+    "addTag": "Add Tag"
 }

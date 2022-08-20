@@ -1,10 +1,15 @@
 <template>
     <div id="content">
         <div class="sidebar">
-            <img alt="Logo" class="logo" src="../assets/logo.png">
+            <img alt="Logo" class="logo" src="../assets/logo.png" />
 
-            <b-button v-for="(item, index) in buttons" :key="index" :type="getButtonType(item.view)"
-                @click="goToPage(item.view)" expanded>
+            <b-button
+                v-for="(item, index) in buttons"
+                :key="index"
+                :type="getButtonType(item.view)"
+                @click="goToPage(item.view)"
+                expanded
+            >
                 {{ $t(item.name) }}
             </b-button>
         </div>
@@ -20,25 +25,24 @@
 </template>
 
 <script>
-
 export default {
     data() {
         return {
-            "buttons": [
+            buttons: [
                 {
                     view: "home",
-                    name: "home"
+                    name: "home",
                 },
                 {
                     view: "search",
-                    name: "search"
+                    name: "search",
                 },
                 {
                     view: "catalog",
-                    name: "catalog"
-                }
-            ]
-        }
+                    name: "catalog",
+                },
+            ],
+        };
     },
     methods: {
         getButtonType(name) {
@@ -51,11 +55,11 @@ export default {
         goToPage(name) {
             if (name == this.$route.name) return;
             this.$router.push({
-                name
-            })
-        }
-    }
-}
+                name,
+            });
+        },
+    },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -67,6 +71,7 @@ export default {
 
 .sidebar {
     width: 240px;
+    min-width: 240px;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -99,6 +104,7 @@ export default {
     & .view {
         padding: 20px 20px 0px 20px;
         overflow: auto;
+        height: 100%;
     }
 }
 
