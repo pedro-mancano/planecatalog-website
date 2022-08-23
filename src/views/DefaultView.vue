@@ -99,6 +99,7 @@ export default {
     & .view {
         padding: 20px 20px 0px 20px;
         overflow: auto;
+        height: 100%;
     }
 }
 

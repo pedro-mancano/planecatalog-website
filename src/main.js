@@ -15,6 +15,10 @@ Vue.config.productionTip = false;
 
 Vue.use(VueAxios, axios)
 
+/**
+ * PLANE COMPARE
+ */
+
 new Vue({
   router,
   i18n,

@@ -1,0 +1,206 @@
+{
+    "parameters": [
+        {
+            "name": "seatCount",
+            "type": "number",
+            "default": 1,
+            "unit": "",
+            "range": [
+                1,
+                500
+            ]
+        },
+        {
+            "name": "wingspan",
+            "type": "number",
+            "default": 0,
+            "unit": "m",
+            "range": [
+                0,
+                100
+            ]
+        },
+        {
+            "name": "length",
+            "type": "number",
+            "default": 0,
+            "unit": "m",
+            "range": [
+                0,
+                100
+            ]
+        },
+        {
+            "name": "cabinLength",
+            "type": "number",
+            "default": 0,
+            "unit": "m",
+            "range": [
+                0,
+                100
+            ]
+        },
+        {
+            "name": "wingArea",
+            "type": "number",
+            "default": 0,
+            "unit": "m2",
+            "range": [
+                0,
+                100
+            ]
+        },
+        {
+            "name": "aspectRatio",
+            "type": "number",
+            "default": 0,
+            "unit": "",
+            "range": [
+                0,
+                100
+            ]
+        },
+        {
+            "name": "weightEmpty",
+            "type": "number",
+            "default": 0,
+            "unit": "kg",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "weightCargo",
+            "type": "number",
+            "default": 0,
+            "unit": "kg",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "wingWeightCargo",
+            "type": "number",
+            "default": 0,
+            "unit": "kg",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "horsepower",
+            "type": "number",
+            "default": 0,
+            "unit": "hp",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "VNE",
+            "type": "number",
+            "default": 0,
+            "unit": "m/s",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "speedMax",
+            "type": "number",
+            "default": 0,
+            "unit": "m/s",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "speedCruise",
+            "type": "number",
+            "default": 0,
+            "unit": "m/s",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "speedStallNoFlap",
+            "type": "number",
+            "default": 0,
+            "unit": "m/s",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "speedStallFlap",
+            "type": "number",
+            "default": 0,
+            "unit": "m/s",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "rateOfClimb",
+            "type": "number",
+            "default": 0,
+            "unit": "m/s",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "takeoffDistance",
+            "type": "number",
+            "default": 0,
+            "unit": "m",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "range",
+            "type": "number",
+            "default": 0,
+            "unit": "m",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "autonomy",
+            "type": "number",
+            "default": 0,
+            "unit": "h",
+            "range": [
+                0,
+                10000
+            ]
+        },
+        {
+            "name": "motor",
+            "type": "custom",
+            "default": "",
+            "unit": ""
+        },
+        {
+            "name": "material",
+            "type": "custom",
+            "default": "",
+            "unit": ""
+        }
+    ]
+}
