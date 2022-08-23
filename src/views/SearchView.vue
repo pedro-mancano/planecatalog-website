@@ -20,14 +20,17 @@
       </b-field>
       <div class="buttons">
         <b-button type="is-primary is-light" @click="openFilterModal">{{ $t('filters') }}</b-button>
-        <b-button type="is-primary is-priamry" @click="search">{{ $t('search') }}</b-button>
+        <b-button type="is-primary" @click="search">{{ $t('search') }}</b-button>
       </div>
     </div>
 
-    <div>
-      <b-field label="Message" horizontal>
-        <b-input v-model="a" maxlength="200" type="textarea"></b-input>
-      </b-field>
+    <div class="" v-if="columns.length > 0">
+      <b-table :data="planeData" :columns="columns" :checked-rows.sync="checkedRows" checkable>
+        <template #bottom-left>
+          <b>Total checked</b>: {{ checkedRows.length }}
+        </template>
+      </b-table>
+      <b-button type="is-primary" @click="search">{{ $t('search.plot') }}</b-button>
     </div>
 
     <b-modal v-model="isFilterModalActive" :width="isMobile() ? '92vw' : '640px'" scroll="keep">
@@ -99,6 +102,7 @@
 
 import planeParameters from '@/assets/planeParameters.json';
 import planeCategories from '@/assets/planeCategories.json';
+import planes from '@/assets/planes.json';
 
 export default {
   data() {
@@ -118,7 +122,9 @@ export default {
       selectedParameters: [],
       filtersList: [],
       isFilterModalActive: false,
-      a: "a"
+      checkedRows: [],
+      planeData: planes.planes,
+      columns: [],
     };
   },
   methods: {
@@ -157,7 +163,17 @@ export default {
         e.push(`${el.name}:${el.value}`);
       });
 
-      this.a = e.join('\n');
+      this.columns = [
+        {
+          field: 'name',
+          label: this.$t('search.planename'),
+        },
+        ...this.selectedParameters.map((el) => {
+          return {
+            field: el.name,
+            label: el.translate,
+          };
+        })]
     },
     isMobile() {
       return window.innerWidth < 768;

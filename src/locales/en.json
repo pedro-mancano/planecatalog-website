@@ -9,6 +9,8 @@
     "search.enterparameters": "Enter Parameters to Compare",
     "search.addfilter": "Add Filter",
     "search.unitin": "Unit in",
+    "search.planename": "Plane Name",
+    "search.plot": "Plot",
     "units": {
         "m": "Meter",
         "ft": "Feet",
@@ -52,6 +54,7 @@
     "speedStallFlap": "Speed Stall Flap",
     "rateOfClimb": "Rate of Climb",
     "takeoffDistance": "Takeoff Distance",
+    "liftDragRatio": "Lift-Drag Ratio",
     "range": "Range",
     "autonomy": "Autonomy",
     "motor": "Motor",

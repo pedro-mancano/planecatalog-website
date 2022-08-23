@@ -197,10 +197,14 @@
       "unit": ""
     },
     {
-      "name": "material",
-      "type": "custom",
-      "default": "",
-      "unit": ""
+      "name": "liftDragRatio",
+      "type": "number",
+      "default": 1,
+      "unit": "",
+      "range": [
+        0,
+        50
+      ]
     }
   ]
 }
