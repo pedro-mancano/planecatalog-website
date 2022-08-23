@@ -30,7 +30,7 @@
       </b-field>
     </div>
 
-    <b-modal v-model="isFilterModalActive" :width="isMobile ? '92vw' : '640px'" scroll="keep">
+    <b-modal v-model="isFilterModalActive" :width="isMobile() ? '92vw' : '640px'" scroll="keep">
       <div class="modalContainer">
         <div class="model-card">
           <div class="model-card__header">
