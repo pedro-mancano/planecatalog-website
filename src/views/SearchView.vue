@@ -214,9 +214,6 @@ export default {
           };
         })]
     },
-    plot() {
-
-    },
     isMobile() {
       return window.innerWidth < 768;
     },
