@@ -200,10 +200,6 @@ export default {
       width: unset;
     }
 
-    &>*:not(:last-child) {
-      //padding-right: 15px;
-    }
-
     .tagSelector {
       display: table;
     }
