@@ -15,7 +15,7 @@ Vue.config.productionTip = false;
 
 Vue.use(VueAxios, axios)
 
-Vue.prototype.$backend = process.env.NODE_ENV === 'production' ? 'https://api.airplane.com' : 'http://localhost:3000';
+Vue.prototype.$backend = process.env.NODE_ENV === 'production' ? 'https://planecompare.pedromancano.xyz' : 'http://localhost:3000';
 
 console.log(process.env.NODE_ENV)
 /**
