@@ -11,6 +11,7 @@
     "search.unitin": "Unit in",
     "search.planename": "Plane Name",
     "search.plot": "Plot",
+    "search.addplot": "Add Plot",
     "units": {
         "m": "Meter",
         "ft": "Feet",

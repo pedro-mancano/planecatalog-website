@@ -19,7 +19,9 @@
         </b-taginput>
       </b-field>
       <div class="buttons">
-        <b-button type="is-primary is-light" @click="openFilterModal">{{ $t('filters') }}</b-button>
+        <b-button type="is-primary is-light" @click="openFilterModal">
+          {{ `${$t('filters')} ${filtersList.length > 0 ? `(${filtersList.length})` : ''}` }}
+        </b-button>
         <b-button type="is-primary" @click="search" :loading="isTableLoading">{{ $t('search') }}</b-button>
       </div>
     </div>
@@ -96,6 +98,33 @@
       </div>
 
     </b-modal>
+
+    <b-modal v-model="isPlotModalActive" :width="isMobile() ? '92vw' : '640px'" scroll="keep">
+      <div class="modalContainer">
+        <div class="model-card">
+          <div class="model-card__header">
+            <div class="model-card__title">
+              <h1 class="title">
+                <span>{{ $t('search.plot') }}</span>
+              </h1>
+            </div>
+
+
+            <b-button icon-left="plus" type="is-primary">
+              {{ $t("search.addplot") }}
+            </b-button>
+          </div>
+
+          <div class="plotArr">
+            <div v-for="(tag, index) of plotArr" :key="index" class="filterItem">
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </b-modal>
   </div>
 </template>
 
@@ -123,9 +152,9 @@ export default {
       filtersList: [],
       isFilterModalActive: false,
       checkedRows: [],
+      isTableLoading: false,
       planeData: [],
       columns: [],
-      isTableLoading: false
     };
   },
   methods: {
@@ -190,6 +219,9 @@ export default {
     },
     isMobile() {
       return window.innerWidth < 768;
+    },
+    plot(){
+      this.isPlotModalActive = true;
     }
   }
 }
