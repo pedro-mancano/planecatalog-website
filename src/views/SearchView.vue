@@ -155,6 +155,8 @@ export default {
       isTableLoading: false,
       planeData: [],
       columns: [],
+      isPlotModalActive: false,
+      plotArr: [],
     };
   },
   methods: {
