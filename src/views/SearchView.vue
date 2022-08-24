@@ -20,17 +20,18 @@
       </b-field>
       <div class="buttons">
         <b-button type="is-primary is-light" @click="openFilterModal">{{ $t('filters') }}</b-button>
-        <b-button type="is-primary" @click="search">{{ $t('search') }}</b-button>
+        <b-button type="is-primary" @click="search" :loading="isTableLoading">{{ $t('search') }}</b-button>
       </div>
     </div>
 
     <div class="" v-if="columns.length > 0">
-      <b-table :data="planeData" :columns="columns" :checked-rows.sync="checkedRows" checkable>
+      <b-table :data="planeData" :columns="columns" :checked-rows.sync="checkedRows" :loading="isTableLoading"
+        checkable>
         <template #bottom-left>
           <b>Total checked</b>: {{ checkedRows.length }}
         </template>
       </b-table>
-      <b-button type="is-primary" @click="search">{{ $t('search.plot') }}</b-button>
+      <b-button type="is-primary" @click="plot">{{ $t('search.plot') }}</b-button>
     </div>
 
     <b-modal v-model="isFilterModalActive" :width="isMobile() ? '92vw' : '640px'" scroll="keep">
@@ -102,7 +103,6 @@
 
 import planeParameters from '@/assets/planeParameters.json';
 import planeCategories from '@/assets/planeCategories.json';
-import planes from '@/assets/planes.json';
 
 export default {
   data() {
@@ -123,8 +123,9 @@ export default {
       filtersList: [],
       isFilterModalActive: false,
       checkedRows: [],
-      planeData: planes.planes,
+      planeData: [],
       columns: [],
+      isTableLoading: false
     };
   },
   methods: {
@@ -158,11 +159,20 @@ export default {
       this.filtersList.splice(this.filtersList.indexOf(e), 1);
     },
     search() {
-      var e = [];
-      this.filtersList.forEach((el) => {
-        e.push(`${el.name}:${el.value}`);
-      });
+      this.isTableLoading = true;
+      this.axios({
+        url: this.$backend + "/plane/query",
+        method: "POST",
+        data: {
+          filter: "adasdaa@adada.com",
+        },
+      }).then((e) => {
+        this.planeData = e.data;
+      }).catch(() => {
 
+      }).finally(() => {
+        this.isTableLoading = false;
+      });
       this.columns = [
         {
           field: 'name',
