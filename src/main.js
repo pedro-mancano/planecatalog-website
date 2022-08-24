@@ -7,15 +7,17 @@ import i18n from './plugins/vue-i18n'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+const production = process.env.NODE_ENV === 'production';
+
+Vue.use(VueAxios, axios)
 Vue.use(Buefy, {
   defaultIconPack: 'fa',
 });
 
 Vue.config.productionTip = false;
 
-Vue.use(VueAxios, axios)
-
-Vue.prototype.$backend = process.env.NODE_ENV === 'production' ? 'https://planecompare.pedromancano.xyz' : 'http://localhost:3000';
+Vue.prototype.$production = production
+Vue.prototype.$backend = production ? 'https://planecompare.pedromancano.xyz' : 'http://localhost:3000';
 
 console.log(process.env.NODE_ENV)
 /**
