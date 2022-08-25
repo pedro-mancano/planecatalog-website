@@ -3,15 +3,23 @@
         <div class="sidebar">
             <img alt="Logo" class="logo" src="../assets/logo.png" />
 
-            <b-button
-                v-for="(item, index) in buttons"
-                :key="index"
-                :type="getButtonType(item.view)"
-                @click="goToPage(item.view)"
-                expanded
-            >
+            <b-button v-for="(item, index) in buttons" :key="index" :type="getButtonType(item.view)"
+                @click="goToPage(item.view)" expanded>
                 {{ $t(item.name) }}
             </b-button>
+
+            <div class="bottom">
+                <b-dropdown aria-role="list" expanded position="is-top-left">
+                    <template #trigger>
+                        <b-button :label="$t('language')" type="is-primary is-light" icon-left="language" expanded />
+                    </template>
+
+                    <b-dropdown-item v-for="(language, languageIndex) in languages" :key="languageIndex"
+                        @click="changeLanguage(language)">
+                        {{ language }}
+                    </b-dropdown-item>
+                </b-dropdown>
+            </div>
         </div>
         <div class="view-out">
             <div class="header">
@@ -44,6 +52,11 @@ export default {
             ],
         };
     },
+    computed: {
+        languages() {
+            return Object.keys(this.$i18n.messages);
+        }
+    },
     methods: {
         getButtonType(name) {
             if (name == this.$route.name) {
@@ -57,6 +70,9 @@ export default {
             this.$router.push({
                 name,
             });
+        },
+        changeLanguage(language) {
+            this.$i18n.locale = language;
         },
     },
 };
@@ -110,5 +126,10 @@ export default {
 
 .logo {
     width: 180px;
+}
+
+.bottom {
+    margin-top: auto;
+    width: 100%;
 }
 </style>

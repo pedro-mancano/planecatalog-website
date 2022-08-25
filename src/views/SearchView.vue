@@ -4,18 +4,24 @@
     <div class="filterContent">
       <b-field :label="$t('search.entercategories')">
         <b-taginput v-model="selectedCategories" :data="planeCategories" autocomplete :allow-new="false" open-on-focus
-          field="name" icon="tag" placeholder="Add a tag" @typing="getFilteredTags_Categories">
+          field="name" icon="tag" :placeholder="$t('search.addatag')" @typing="getFilteredTags_Categories">
         </b-taginput>
       </b-field>
       <b-field :label="$t('search.enterparameters')">
-        <b-taginput v-model="selectedParameters" :data="planeParameters" autocomplete :allow-new="false" open-on-focus
-          icon="tag" field="translate" placeholder="Add a tag" @typing="getFilteredTags_Parameters"
-          @remove="removedParameters">
+        <b-taginput ref="taginputParams" v-model="selectedParameters" :data="planeParameters" autocomplete
+          :allow-new="false" open-on-focus icon="tag" field="name" :placeholder="$t('search.addatag')"
+          @typing="getFilteredTags_Parameters" @remove="removedParameters">
           <template slot-scope="props">
-            <span>{{ props.option.translate }}
+            <span>{{ $t(`planeparams.${props.option.name}`) }}
               <b-icon size="is-small" type="is-success" icon="check"
                 v-if="selectedParameters.indexOf(props.option) >= 0"></b-icon>
             </span>
+          </template>
+          <template #selected="props">
+            <b-tag v-for="(tag, index) in props.tags" :key="index" type="is-primary" rounded :tabstop="false" ellipsis
+              closable @close="$refs.taginputParams.removeTag(index, $event)">
+              {{ $t('planeparams.' + tag.name) }}
+            </b-tag>
           </template>
         </b-taginput>
       </b-field>
@@ -27,14 +33,23 @@
       </div>
     </div>
 
-    <div class="" v-if="columns.length > 0">
+    <div class="planeTable" v-if="columns.length > 0">
       <b-table :data="planeData" :columns="columns" :checked-rows.sync="checkedRows" :loading="isTableLoading"
         checkable>
         <template #bottom-left>
           <b>Total checked</b>: {{ checkedRows.length }}
         </template>
       </b-table>
-      <b-button type="is-primary" @click="plot">{{ $t('search.plot') }}</b-button>
+      <div class="plotButtons">
+        <b-button type="is-primary is-light" @click="plotModal">
+          {{ `${$t('search.plotconfig')} ${plotArr.length > 0 ? `(${plotArr.length})` : ''}` }}
+        </b-button>
+        <b-button type="is-primary" @click="plot">{{ $t('search.plot') }}</b-button>
+      </div>
+    </div>
+
+    <div class="plots" ref="plots">
+
     </div>
 
     <b-modal v-model="isFilterModalActive" :width="isMobile() ? '92vw' : '640px'" scroll="keep">
@@ -54,9 +69,9 @@
                 </b-button>
               </template>
 
-              <b-dropdown-item arial-role="listitem" v-for="(item, index) of selectedParameters" :key="index"
-                @click="filterClick(index)">
-                <span>{{ item.translate }}
+              <b-dropdown-item arial-role="listitem" v-for="(item, itemIndex) of selectedParameters" :key="itemIndex"
+                @click="filterClick(itemIndex)">
+                <span>{{ $t(`planeparams.${item.name}`) }}
                   <b-icon v-if="filtersList.indexOf(item) >= 0" type="is-success" icon="check">
                   </b-icon>
                 </span>
@@ -65,12 +80,12 @@
           </div>
 
           <div class="filterArr">
-            <div v-for="(tag, index) of filtersList" :key="index" class="filterItem">
+            <div v-for="(tag, tagIndex) of filtersList" :key="tagIndex" class="filterItem">
               <div v-if="tag.type == 'number'">
                 <b-field :message="tag.unit ? `${$t('search.unitin')}: ${$t('units')[tag.unit.trim()]}` : ''">
                   <template #label>
-                    <span>{{ tag.translate }} <b-icon pack="fas" type="is-danger" icon="xmark" class="filterRemoveIcon"
-                        @click.native="removeFilter(tag)">
+                    <span>{{ $t(`planeparams.${tag.name}`) }} <b-icon pack="fas" type="is-danger" icon="xmark"
+                        class="filterRemoveIcon" @click.native="removeFilter(tag)">
                       </b-icon></span>
                   </template>
                   <b-numberinput v-model="tag.value" :min="tag.range[0]" :max="tag.range[1]"
@@ -81,8 +96,8 @@
               <div v-if="tag.type == 'number_range'">
                 <b-field :message="tag.unit ? `${$t('search.unitin')}: ${$t('units')[tag.unit.trim()]}` : ''">
                   <template #label>
-                    <span>{{ tag.translate }} <b-icon pack="fas" type="is-danger" icon="xmark" class="filterRemoveIcon"
-                        @click.native="removeFilter(tag)">
+                    <span>{{ $t(`planeparams.${tag.name}`) }} <b-icon pack="fas" type="is-danger" icon="xmark"
+                        class="filterRemoveIcon" @click.native="removeFilter(tag)">
                       </b-icon></span>
                   </template>
                   <div>
@@ -93,6 +108,12 @@
                 </b-field>
               </div>
             </div>
+          </div>
+
+          <div class="model-card__footer">
+            <b-button type="is-danger" @click="isFilterModalActive = false">
+              {{ $t("close") }}
+            </b-button>
           </div>
 
         </div>
@@ -111,15 +132,54 @@
             </div>
 
 
-            <b-button icon-left="plus" type="is-primary">
+            <b-button icon-left="plus" type="is-primary" @click="addPlot">
               {{ $t("search.addplot") }}
             </b-button>
           </div>
 
           <div class="plotArr">
-            <div v-for="(tag, index) of plotArr" :key="index" class="filterItem">
-
+            <div v-for="(plot, plotIndex) of plotArr" :key="plotIndex" class="plotItem">
+              <div class="plotContainer">
+                <b-field>
+                  <template #label>
+                    <span>{{ `Plot ${plotIndex + 1}` }} <b-icon pack="fas" type="is-danger" icon="xmark"
+                        class="filterRemoveIcon" @click.native="removePlot(plotIndex)">
+                      </b-icon></span>
+                  </template>
+                  <b-select v-model="plot.type" :placeholder="$t('plot.selecttype')" @input="plotTypeInput(plotIndex)"
+                    expanded>
+                    <option value="scatter">{{ $t('scatter') }}</option>
+                    <option value="column">{{ $t('column') }}</option>
+                  </b-select>
+                </b-field>
+                <b-field label="X">
+                  <b-select v-if="plot.type != 'column'" v-model="plot.x" :placeholder="$t('plot.selectparam')"
+                    expanded>
+                    <option v-for="(param, paramIndex) of selectedParameters.filter(i => i.name != plot.y)"
+                      :key="paramIndex" :value="param.name">
+                      {{ $t(`planeparams.${param.name}`) }}
+                    </option>
+                  </b-select>
+                  <b-select v-else :placeholder="$t('search.planename')" expanded disabled>
+                  </b-select>
+                </b-field>
+                <b-field label="Y">
+                  <b-select v-model="plot.y" :placeholder="$t('plot.selectparam')" expanded>
+                    <option v-for="(param, paramIndex) of selectedParameters.filter(i => i.name != plot.x)"
+                      :key="paramIndex" :value="param.name">
+                      {{ $t(`planeparams.${param.name}`) }}
+                    </option>
+                  </b-select>
+                </b-field>
+              </div>
             </div>
+          </div>
+
+
+          <div class="model-card__footer">
+            <b-button type="is-danger" @click="isPlotModalActive = false">
+              {{ $t("close") }}
+            </b-button>
           </div>
 
         </div>
@@ -133,15 +193,16 @@
 
 import planeParameters from '@/assets/planeParameters.json';
 import planeCategories from '@/assets/planeCategories.json';
+import * as ChartJS from 'chart.js';
 
 export default {
   data() {
     return {
       tags: [],
       planeParameters: planeParameters.parameters.map((el) => {
-        el.translate = this.$t(el.name);
+        el.translate = this.$t(`planeparams.${el.name}`);
         switch (el.type) {
-          case 'number':
+          case 'number_range':
             el.value = [el.default, el.default];
             break;
         }
@@ -160,6 +221,9 @@ export default {
       plotArr: [],
     };
   },
+  created() {
+    ChartJS.Chart.register(ChartJS.LinearScale, ChartJS.ScatterController, ChartJS.PointElement);
+  },
   methods: {
     filterClick(e) {
       if (!this.filtersList.includes(this.selectedParameters[e])) {
@@ -176,6 +240,7 @@ export default {
     },
     removedParameters(tag) {
       this.removeFilter(tag);
+      this.plotArr = [];
     },
     getFilteredTags_Categories(text) {
       this.planeCategories = planeCategories.categories.filter((option) => {
@@ -195,7 +260,7 @@ export default {
     },
     parseFilterItem(item) {
       switch (item.type) {
-        case 'number':
+        case 'number_range':
           return {
             field: item.name,
             type: item.type,
@@ -214,6 +279,8 @@ export default {
       return filters;
     },
     search() {
+      this.planeData = [];
+      this.checkedRows = [];
       this.isTableLoading = true;
       this.axios({
         url: this.$backend + "/plane/query",
@@ -236,15 +303,86 @@ export default {
         ...this.selectedParameters.map((el) => {
           return {
             field: el.name,
-            label: el.translate,
+            label: this.$t(`planeparams.${el.name}`),
           };
         })]
     },
     isMobile() {
       return window.innerWidth < 768;
     },
-    plot() {
+    plotModal() {
       this.isPlotModalActive = true;
+    },
+    addPlot() {
+      this.plotArr.push({
+        type: 'scatter',
+        x: undefined,
+        y: undefined
+      });
+    },
+    removePlot(index) {
+      this.plotArr.splice(index, 1);
+    },
+    plot() {
+      var plotElement = this.$refs.plots;
+      while (plotElement.firstChild) {
+        plotElement.removeChild(plotElement.firstChild);
+      }
+      for (var plot of this.plotArr) {
+        var canvas = document.createElement('canvas');
+        plotElement.appendChild(canvas);
+        canvas.width = 400;
+        canvas.height = 400;
+        var ctx = canvas.getContext('2d');
+        new ChartJS.Chart(ctx, {
+          type: plot.type,
+          data: {
+            datasets: [{
+              label: this.$t('search.plot'),
+              data: this.planeData.filter(el => this.checkedRows.indexOf(el) >= 0).map((el) => {
+                return {
+                  x: el[plot.x],
+                  y: el[plot.y]
+                };
+              }),
+              backgroundColor: 'rgba(255, 99, 132, 1)'
+            }]
+          },
+          options: {
+            scales: {
+              x: {
+                type: 'linear',
+                position: 'bottom'
+              }
+            },
+            maintainAspectRatio: false,
+            responsive: false,
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    let label = context.dataset.label || '';
+
+                    if (label) {
+                      label += ': ';
+                    }
+                    if (context.parsed.y !== null) {
+                      label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                    }
+                    return label;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+    },
+    plotTypeInput(i) {
+      var plotObj = this.plotArr[i];
+      if (plotObj.type == 'column') {
+        plotObj.x = '';
+      }
     }
   }
 }
@@ -254,7 +392,9 @@ export default {
 .searchContent {
   display: flex;
   flex-direction: column;
-  max-width: 450px;
+  //max-width: 450px;
+  width: 100%;
+
 
   & .filterContent {
     display: flex;
@@ -298,6 +438,12 @@ export default {
     padding: 0px 20px;
   }
 
+  & .model-card__footer {
+    padding: 0px 20px;
+    margin-left: auto;
+    margin-top: 20px;
+  }
+
   & .model-card__title {
     margin-bottom: 1rem;
   }
@@ -334,5 +480,46 @@ export default {
 
 .filterRemoveIcon {
   cursor: pointer;
+}
+
+.plotArr {
+  margin-top: 25px;
+  overflow: auto;
+
+  & .plotItem:not(:last-child) {
+    margin-bottom: 15px;
+  }
+
+  & .plotContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    padding: 0px 20px;
+    width: 100%;
+
+    ::v-deep .field {
+      width: 30%;
+    }
+  }
+}
+
+.planeTable {
+  ::v-deep .b-table {
+    margin-bottom: 20px;
+  }
+
+  & .plotButtons {
+    max-width: 380px;
+    width: 380px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+
+    &> :last-child {
+      margin-left: auto;
+    }
+  }
 }
 </style>
