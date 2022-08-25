@@ -8,7 +8,7 @@
 html,
 body {
   overflow-y: hidden !important;
-  height: 100vh;
+  height: 100%;
 }
 
 #app {

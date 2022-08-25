@@ -37,7 +37,7 @@
       <b-table :data="planeData" :columns="columns" :checked-rows.sync="checkedRows" :loading="isTableLoading"
         checkable>
         <template #bottom-left>
-          <b>Total checked</b>: {{ checkedRows.length }}
+          <!--b>Total checked</b>: {{ checkedRows.length }} <div-->
         </template>
       </b-table>
       <div class="plotButtons">
@@ -48,9 +48,13 @@
       </div>
     </div>
 
-    <div class="plots" ref="plots">
-
+    <div v-if="showPlots" class="plots" ref="plots">
+      <PlotComponent v-for="(plot, index) in readyToPlot" :key="index" :data="checkedRows" :type="plot.type"
+        :options="[plot.x, plot.y]" :ref="`plot-${index}`">
+      </PlotComponent>
     </div>
+
+
 
     <b-modal v-model="isFilterModalActive" :width="isMobile() ? '92vw' : '640px'" scroll="keep">
       <div class="modalContainer">
@@ -193,9 +197,13 @@
 
 import planeParameters from '@/assets/planeParameters.json';
 import planeCategories from '@/assets/planeCategories.json';
+import PlotComponent from '@/components/PlotComponent.vue';
 import * as ChartJS from 'chart.js';
 
 export default {
+  components: {
+    PlotComponent
+  },
   data() {
     return {
       tags: [],
@@ -219,6 +227,8 @@ export default {
       columns: [],
       isPlotModalActive: false,
       plotArr: [],
+      showPlots: false,
+      readyToPlot: []
     };
   },
   created() {
@@ -290,6 +300,7 @@ export default {
         },
       }).then((e) => {
         this.planeData = e.data;
+        this.checkedRows = this.planeData;
       }).catch(() => {
 
       }).finally(() => {
@@ -324,66 +335,15 @@ export default {
       this.plotArr.splice(index, 1);
     },
     plot() {
-      var plotElement = this.$refs.plots;
-      while (plotElement.firstChild) {
-        plotElement.removeChild(plotElement.firstChild);
-      }
-      for (var plot of this.plotArr) {
-        var canvas = document.createElement('canvas');
-        plotElement.appendChild(canvas);
-        canvas.width = 400;
-        canvas.height = 400;
-        var ctx = canvas.getContext('2d');
-        new ChartJS.Chart(ctx, {
+      this.showPlots = true;
+      this.readyToPlot = [];
+      this.plotArr.forEach((plot) => {
+        this.readyToPlot.push({
           type: plot.type,
-          data: {
-            datasets: this.planeData.filter(el => this.checkedRows.indexOf(el) >= 0).map((el) => {
-              return {
-                label: el.name,
-                data: [
-                  [el[plot.x], el[plot.y]],
-                ],
-                backgroundColor: 'rgba(255, 99, 132, 1)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1,
-                pointRadius: 3,
-              }
-            })
-          },
-          options: {
-            scales: {
-              x: {
-                type: 'linear',
-                position: 'bottom',
-                title: {
-                  display: true,
-                  text: this.$t(`planeparams.${plot.x}`),
-                },
-              },
-              y: {
-                type: 'linear',
-                position: 'left',
-                title: {
-                  display: true,
-                  text: this.$t(`planeparams.${plot.y}`),
-                },
-              },
-            },
-            maintainAspectRatio: false,
-            responsive: false,
-            plugins: {
-              tooltip: {
-                callbacks: {
-                  label: function (data) {
-                    var name = data.dataset.label;
-                    return name;
-                  }
-                }
-              }
-            }
-          }
+          x: plot.x,
+          y: plot.y
         });
-      }
+      });
     },
     plotTypeInput(i) {
       var plotObj = this.plotArr[i];
@@ -399,7 +359,6 @@ export default {
 .searchContent {
   display: flex;
   flex-direction: column;
-  //max-width: 450px;
   width: 100%;
 
 
