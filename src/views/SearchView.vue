@@ -477,7 +477,7 @@ export default {
 
   & .plotButtons {
     max-width: 380px;
-    width: 380px;
+    width: 100%;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;

@@ -1,6 +1,6 @@
 <template>
     <div id="content">
-        <div class="sidebar">
+        <div :class="`sidebar ${scrollbarActiveMobile ? 'sidebar-active-mobile' : ''}`">
             <img alt="Logo" class="logo" src="../assets/logo.png" />
 
             <b-button v-for="(item, index) in buttons" :key="index" :type="getButtonType(item.view)"
@@ -20,6 +20,10 @@
                     </b-dropdown-item>
                 </b-dropdown>
             </div>
+
+            <div v-if="isMobile" class="sidebar-swtich">
+                <b-button @click="toggleSidebar" icon-left="bars" type="is-light" />
+            </div>
         </div>
         <div class="view-out">
             <div class="header">
@@ -27,6 +31,8 @@
             </div>
             <div class="view">
                 <router-view />
+            </div>
+            <div class="sidebar-background" v-if="scrollbarActiveMobile">
             </div>
         </div>
     </div>
@@ -50,6 +56,7 @@ export default {
                     name: "catalog",
                 },
             ],
+            scrollbarActiveMobile: false
         };
     },
     computed: {
@@ -74,6 +81,12 @@ export default {
         changeLanguage(language) {
             this.$i18n.locale = language;
         },
+        isMobile() {
+            return window.innerWidth < 768;
+        },
+        toggleSidebar() {
+            this.scrollbarActiveMobile = !this.scrollbarActiveMobile;
+        }
     },
 };
 </script>
@@ -85,6 +98,21 @@ export default {
     height: 100%;
 }
 
+.sidebar-background {
+    display: none;
+
+    @media screen and (max-width: 768px) {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #000000cc;
+        z-index: 998;
+    }
+}
+
 .sidebar {
     width: 240px;
     min-width: 240px;
@@ -93,6 +121,33 @@ export default {
     flex-direction: column;
     justify-items: center;
     align-items: center;
+    left: 0px;
+
+    & .sidebar-swtich {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        position: absolute;
+        z-index: 999;
+        background: white;
+        height: 100%;
+        left: -240px;
+        transition: left ease-in-out 0.3s;
+
+        & .sidebar-swtich {
+            position: absolute;
+            top: 20px;
+            width: 40px;
+            height: 40px;
+            left: 220px;
+            display: block;
+        }
+
+        &.sidebar-active-mobile {
+            left: 0px !important;
+        }
+    }
 
     & .logo {
         margin-top: 40px;
@@ -108,6 +163,12 @@ export default {
     flex: 1 auto;
     display: flex;
     flex-direction: column;
+
+    @media screen and (max-width: 768px) {
+        overflow-x: hidden;
+        overflow-y: auto;
+        width: 100vw;
+    }
 
     & .header {
         height: auto;
