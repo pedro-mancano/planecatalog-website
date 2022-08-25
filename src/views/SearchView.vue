@@ -9,7 +9,8 @@
       </b-field>
       <b-field :label="$t('search.enterparameters')">
         <b-taginput v-model="selectedParameters" :data="planeParameters" autocomplete :allow-new="false" open-on-focus
-          icon="tag" field="translate" placeholder="Add a tag" @typing="getFilteredTags_Parameters">
+          icon="tag" field="translate" placeholder="Add a tag" @typing="getFilteredTags_Parameters"
+          @remove="removedParameters">
           <template slot-scope="props">
             <span>{{ props.option.translate }}
               <b-icon size="is-small" type="is-success" icon="check"
@@ -65,7 +66,7 @@
 
           <div class="filterArr">
             <div v-for="(tag, index) of filtersList" :key="index" class="filterItem">
-              <div v-if="tag.type == '!number'">
+              <div v-if="tag.type == 'number'">
                 <b-field :message="tag.unit ? `${$t('search.unitin')}: ${$t('units')[tag.unit.trim()]}` : ''">
                   <template #label>
                     <span>{{ tag.translate }} <b-icon pack="fas" type="is-danger" icon="xmark" class="filterRemoveIcon"
@@ -77,7 +78,7 @@
                   </b-numberinput>
                 </b-field>
               </div>
-              <div v-if="tag.type == 'number'">
+              <div v-if="tag.type == 'number_range'">
                 <b-field :message="tag.unit ? `${$t('search.unitin')}: ${$t('units')[tag.unit.trim()]}` : ''">
                   <template #label>
                     <span>{{ tag.translate }} <b-icon pack="fas" type="is-danger" icon="xmark" class="filterRemoveIcon"
@@ -173,6 +174,9 @@ export default {
           .indexOf(text.toLowerCase()) >= 0
       })
     },
+    removedParameters(tag) {
+      this.removeFilter(tag);
+    },
     getFilteredTags_Categories(text) {
       this.planeCategories = planeCategories.categories.filter((option) => {
         return option.name
@@ -189,13 +193,33 @@ export default {
     removeFilter(e) {
       this.filtersList.splice(this.filtersList.indexOf(e), 1);
     },
+    parseFilterItem(item) {
+      switch (item.type) {
+        case 'number':
+          return {
+            field: item.name,
+            type: item.type,
+            value: {
+              min: item.value[0],
+              max: item.value[1]
+            },
+          };
+      }
+    },
+    parseFilterListToServer() {
+      let filters = [];
+      this.filtersList.forEach((item) => {
+        filters.push(this.parseFilterItem(item));
+      });
+      return filters;
+    },
     search() {
       this.isTableLoading = true;
       this.axios({
         url: this.$backend + "/plane/query",
         method: "POST",
         data: {
-          filter: "adasdaa@adada.com",
+          filter: this.parseFilterListToServer(),
         },
       }).then((e) => {
         this.planeData = e.data;
@@ -219,7 +243,7 @@ export default {
     isMobile() {
       return window.innerWidth < 768;
     },
-    plot(){
+    plot() {
       this.isPlotModalActive = true;
     }
   }
