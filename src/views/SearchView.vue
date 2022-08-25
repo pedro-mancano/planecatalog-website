@@ -222,7 +222,7 @@ export default {
     };
   },
   created() {
-    ChartJS.Chart.register(ChartJS.LinearScale, ChartJS.ScatterController, ChartJS.PointElement);
+    ChartJS.Chart.register(ChartJS.LinearScale, ChartJS.ScatterController, ChartJS.PointElement, ChartJS.Tooltip);
   },
   methods: {
     filterClick(e) {
@@ -337,39 +337,46 @@ export default {
         new ChartJS.Chart(ctx, {
           type: plot.type,
           data: {
-            datasets: [{
-              label: this.$t('search.plot'),
-              data: this.planeData.filter(el => this.checkedRows.indexOf(el) >= 0).map((el) => {
-                return {
-                  x: el[plot.x],
-                  y: el[plot.y]
-                };
-              }),
-              backgroundColor: 'rgba(255, 99, 132, 1)'
-            }]
+            datasets: this.planeData.filter(el => this.checkedRows.indexOf(el) >= 0).map((el) => {
+              return {
+                label: el.name,
+                data: [
+                  [el[plot.x], el[plot.y]],
+                ],
+                backgroundColor: 'rgba(255, 99, 132, 1)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                pointRadius: 3,
+              }
+            })
           },
           options: {
             scales: {
               x: {
                 type: 'linear',
-                position: 'bottom'
-              }
+                position: 'bottom',
+                title: {
+                  display: true,
+                  text: this.$t(`planeparams.${plot.x}`),
+                },
+              },
+              y: {
+                type: 'linear',
+                position: 'left',
+                title: {
+                  display: true,
+                  text: this.$t(`planeparams.${plot.y}`),
+                },
+              },
             },
             maintainAspectRatio: false,
             responsive: false,
             plugins: {
               tooltip: {
                 callbacks: {
-                  label: function (context) {
-                    let label = context.dataset.label || '';
-
-                    if (label) {
-                      label += ': ';
-                    }
-                    if (context.parsed.y !== null) {
-                      label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
-                    }
-                    return label;
+                  label: function (data) {
+                    var name = data.dataset.label;
+                    return name;
                   }
                 }
               }
@@ -521,5 +528,13 @@ export default {
       margin-left: auto;
     }
   }
+}
+
+.plots {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
 }
 </style>
