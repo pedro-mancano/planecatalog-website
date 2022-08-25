@@ -32,7 +32,7 @@
             <div class="view">
                 <router-view />
             </div>
-            <div class="sidebar-background" v-if="scrollbarActiveMobile">
+            <div class="sidebar-background" v-if="scrollbarActiveMobile" @click="toggleSidebar">
             </div>
         </div>
     </div>
@@ -77,6 +77,9 @@ export default {
             this.$router.push({
                 name,
             });
+            if (this.isMobile()) {
+                this.toggleSidebar();
+            }
         },
         changeLanguage(language) {
             this.$i18n.locale = language;
@@ -176,12 +179,21 @@ export default {
         margin-bottom: 20px;
         text-transform: capitalize;
         padding: 20px 20px 0px 20px;
+
+        @media screen and (max-width: 768px) {
+            margin-bottom: 0px;
+            padding: 11px 20px 0px 20px;
+        }
     }
 
     & .view {
         padding: 20px 20px 0px 20px;
         overflow: auto;
         height: 100%;
+
+        @media screen and (max-width: 768px) {
+            padding: 20px;
+        }
     }
 }
 
