@@ -12,79 +12,171 @@ export default {
     data() {
         return {
             colorCycle: ['1f77b4', 'ff7f0e', '2ca02c', 'd62728', '9467bd', '8c564b', 'e377c2', '7f7f7f', 'bcbd22', '17becf'],
+            ctx: null,
+            currentChart: null,
         };
     },
     props: [
         'data',
         'type',
-        'options',
-        'show'
+        'options'
     ],
     created() {
-        ChartJS.Chart.register(ChartJS.LinearScale, ChartJS.ScatterController, ChartJS.PointElement, ChartJS.Tooltip, ChartJS.Title);
+        ChartJS.Chart.register(ChartJS.ScatterController, ChartJS.LinearScale, ChartJS.PointElement, ChartJS.Tooltip, ChartJS.Title);
+    },
+    updated() {
+        this.draw();
+    },
+    mounted() {
+        this.$refs.canv.height = 400;
+        this.$refs.canv.width = 400;
+        this.ctx = this.$refs.canv.getContext('2d');
+        this.draw();
+    },
+    unmonutted() {
+        if (this.currentChart) {
+            this.currentChart.destroy();
+        }
     },
     methods: {
         generateColorForIndex(i) {
             return '#' + this.colorCycle[i % this.colorCycle.length];
         },
-    },
-    mounted() {
-        this.$refs.canv.height = 400;
-        this.$refs.canv.width = 400;
-        var ctx = this.$refs.canv.getContext('2d');
-        new ChartJS.Chart(ctx, {
-            type: this.type,
-            data: {
-                datasets: this.data.map((el, i) => {
-                    return {
-                        label: el.name,
-                        data: [
-                            [el[this.options[0]], el[this.options[1]]],
-                        ],
-                        backgroundColor: this.generateColorForIndex(i),
-                        borderColor: this.generateColorForIndex(i),
-                        borderWidth: 1,
-                        pointRadius: 3,
-                    }
-                })
-            },
-            options: {
-                scales: {
-                    x: {
-                        type: 'linear',
-                        position: 'bottom',
-                        title: {
-                            display: true,
-                            text: this.$t(`planeparams.${this.options[0]}`),
-                        },
-                    },
-                    y: {
-                        type: 'linear',
-                        position: 'left',
-                        title: {
-                            display: true,
-                            text: this.$t(`planeparams.${this.options[1]}`),
-                        },
-                    }
+        compareArrays(arr1, arr2) {
+            if (arr1.length !== arr2.length) {
+                return false;
+            }
+            for (let i = 0; i < arr1.length; i++) {
+                if (arr1[i] !== arr2[i]) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        draw() {
+            if (this.currentChart) {
+                this.currentChart.destroy();
+            }
+            console.log(this.type);
+            switch (this.type) {
+                case 'scatter':
+                    this.drawTypeScatter();
+                    break;
+                case 'column':
+                    this.drawTypeColumns();
+                    break;
+            }
+        },
+        drawTypeColumns() {
+            this.currentChart = new ChartJS.Chart(this.ctx, {
+                type: 'bar',
+                data: {
+                    datasets: this.data.map((el, i) => {
+                        return {
+                            label: el.name,
+                            data: [
+                                [el.name, el[this.options[1]]],
+                            ],
+                            backgroundColor: this.generateColorForIndex(i),
+                            borderColor: this.generateColorForIndex(i),
+                            borderWidth: 1,
+                        }
+                    })
                 },
-                maintainAspectRatio: false,
-                responsive: false,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function (data) {
-                                var name = data.dataset.label;
-                                return name;
-                            }
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: this.$t(`planeparams.${this.options[0]}`),
+                            },
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: this.$t(`planeparams.${this.options[1]}`),
+                            },
+                            beginAtZero: true,
                         }
                     },
-                    title: {
-                        display: true,
-                        text: `${this.$t(`planeparams.${this.options[0]}`)} vs ${this.$t(`planeparams.${this.options[1]}`)}`,
+                    maintainAspectRatio: false,
+                    responsive: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (data) {
+                                    var name = data.dataset.label;
+                                    return name;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: `${this.$t(`planeparams.${this.options[0]}`)} vs ${this.$t(`planeparams.${this.options[1]}`)}`,
+                        }
                     }
-                }
-            },
-        })
+                },
+            })
+        },
+        drawTypeScatter() {
+            this.currentChart = new ChartJS.Chart(this.ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: this.data.map((el, i) => {
+                        return {
+                            label: el.name,
+                            data: [
+                                [el[this.options[0]], el[this.options[1]]],
+                            ],
+                            backgroundColor: this.generateColorForIndex(i),
+                            borderColor: this.generateColorForIndex(i),
+                            borderWidth: 1,
+                            pointRadius: 3,
+                        }
+                    })
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: this.$t(`planeparams.${this.options[0]}`),
+                            },
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: this.$t(`planeparams.${this.options[1]}`),
+                            },
+                        }
+                    },
+                    maintainAspectRatio: false,
+                    responsive: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (data) {
+                                    var name = data.dataset.label;
+                                    return name;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: `${this.$t(`planeparams.${this.options[0]}`)} vs ${this.$t(`planeparams.${this.options[1]}`)}`,
+                        }
+                    }
+                },
+            })
+        }
     },
 }
 </script>

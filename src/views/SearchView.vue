@@ -12,7 +12,7 @@
           :allow-new="false" open-on-focus icon="tag" field="name" :placeholder="$t('search.addatag')"
           @typing="getFilteredTags_Parameters" @remove="removedParameters">
           <template slot-scope="props">
-            <span>{{ $t(`planeparams.${props.option.name}`) }}
+            <span>{{  $t(`planeparams.${props.option.name}`)  }}
               <b-icon size="is-small" type="is-success" icon="check"
                 v-if="selectedParameters.indexOf(props.option) >= 0"></b-icon>
             </span>
@@ -20,16 +20,16 @@
           <template #selected="props">
             <b-tag v-for="(tag, index) in props.tags" :key="index" type="is-primary" rounded :tabstop="false" ellipsis
               closable @close="$refs.taginputParams.removeTag(index, $event)">
-              {{ $t('planeparams.' + tag.name) }}
+              {{  $t('planeparams.' + tag.name)  }}
             </b-tag>
           </template>
         </b-taginput>
       </b-field>
       <div class="buttons">
         <b-button type="is-primary is-light" @click="openFilterModal">
-          {{ `${$t('filters')} ${filtersList.length > 0 ? `(${filtersList.length})` : ''}` }}
+          {{  `${$t('filters')} ${filtersList.length > 0 ? `(${filtersList.length})` : ''}`  }}
         </b-button>
-        <b-button type="is-primary" @click="search" :loading="isTableLoading">{{ $t('search') }}</b-button>
+        <b-button type="is-primary" @click="search" :loading="isTableLoading">{{  $t('search')  }}</b-button>
       </div>
     </div>
 
@@ -42,9 +42,9 @@
       </b-table>
       <div class="plotButtons">
         <b-button type="is-primary is-light" @click="plotModal">
-          {{ `${$t('search.plotconfig')} ${plotArr.length > 0 ? `(${plotArr.length})` : ''}` }}
+          {{  `${$t('search.plotconfig')} ${plotArr.length > 0 ? `(${plotArr.length})` : ''}`  }}
         </b-button>
-        <b-button type="is-primary" @click="plot">{{ $t('search.plot') }}</b-button>
+        <b-button type="is-primary" @click="plot">{{  $t('search.plot')  }}</b-button>
       </div>
     </div>
 
@@ -62,20 +62,20 @@
           <div class="model-card__header">
             <div class="model-card__title">
               <h1 class="title">
-                <span>{{ $t('filters') }}</span>
+                <span>{{  $t('filters')  }}</span>
               </h1>
             </div>
 
             <b-dropdown aria-role="list">
               <template #trigger="{}">
                 <b-button icon-left="plus" type="is-primary">
-                  {{ $t("search.addfilter") }}
+                  {{  $t("search.addfilter")  }}
                 </b-button>
               </template>
 
               <b-dropdown-item arial-role="listitem" v-for="(item, itemIndex) of selectedParameters" :key="itemIndex"
                 @click="filterClick(itemIndex)">
-                <span>{{ $t(`planeparams.${item.name}`) }}
+                <span>{{  $t(`planeparams.${item.name}`)  }}
                   <b-icon v-if="filtersList.indexOf(item) >= 0" type="is-success" icon="check">
                   </b-icon>
                 </span>
@@ -88,7 +88,7 @@
               <div v-if="tag.type == 'number'">
                 <b-field :message="tag.unit ? `${$t('search.unitin')}: ${$t('units')[tag.unit.trim()]}` : ''">
                   <template #label>
-                    <span>{{ $t(`planeparams.${tag.name}`) }} <b-icon pack="fas" type="is-danger" icon="xmark"
+                    <span>{{  $t(`planeparams.${tag.name}`)  }} <b-icon pack="fas" type="is-danger" icon="xmark"
                         class="filterRemoveIcon" @click.native="removeFilter(tag)">
                       </b-icon></span>
                   </template>
@@ -100,12 +100,12 @@
               <div v-if="tag.type == 'number_range'">
                 <b-field :message="tag.unit ? `${$t('search.unitin')}: ${$t('units')[tag.unit.trim()]}` : ''">
                   <template #label>
-                    <span>{{ $t(`planeparams.${tag.name}`) }} <b-icon pack="fas" type="is-danger" icon="xmark"
+                    <span>{{  $t(`planeparams.${tag.name}`)  }} <b-icon pack="fas" type="is-danger" icon="xmark"
                         class="filterRemoveIcon" @click.native="removeFilter(tag)">
                       </b-icon></span>
                   </template>
                   <div>
-                    <span>{{ `${tag.value[0]} - ${tag.value[1]}` }}</span>
+                    <span>{{  `${tag.value[0]} - ${tag.value[1]}`  }}</span>
                     <b-slider v-model="tag.value" :min="tag.range[0]" :max="tag.range[1]" :step="1">
                     </b-slider>
                   </div>
@@ -116,7 +116,7 @@
 
           <div class="model-card__footer">
             <b-button type="is-danger" @click="isFilterModalActive = false">
-              {{ $t("close") }}
+              {{  $t("close")  }}
             </b-button>
           </div>
 
@@ -131,13 +131,13 @@
           <div class="model-card__header">
             <div class="model-card__title">
               <h1 class="title">
-                <span>{{ $t('search.plot') }}</span>
+                <span>{{  $t('search.plot')  }}</span>
               </h1>
             </div>
 
 
             <b-button icon-left="plus" type="is-primary" @click="addPlot">
-              {{ $t("search.addplot") }}
+              {{  $t("search.addplot")  }}
             </b-button>
           </div>
 
@@ -146,14 +146,14 @@
               <div class="plotContainer">
                 <b-field>
                   <template #label>
-                    <span>{{ `Plot ${plotIndex + 1}` }} <b-icon pack="fas" type="is-danger" icon="xmark"
+                    <span>{{  `Plot ${plotIndex + 1}`  }} <b-icon pack="fas" type="is-danger" icon="xmark"
                         class="filterRemoveIcon" @click.native="removePlot(plotIndex)">
                       </b-icon></span>
                   </template>
                   <b-select v-model="plot.type" :placeholder="$t('plot.selecttype')" @input="plotTypeInput(plotIndex)"
                     expanded>
-                    <option value="scatter">{{ $t('scatter') }}</option>
-                    <option value="column">{{ $t('column') }}</option>
+                    <option value="scatter">{{  $t('scatter')  }}</option>
+                    <option value="column">{{  $t('column')  }}</option>
                   </b-select>
                 </b-field>
                 <b-field label="X">
@@ -161,7 +161,7 @@
                     expanded>
                     <option v-for="(param, paramIndex) of selectedParameters.filter(i => i.name != plot.y)"
                       :key="paramIndex" :value="param.name">
-                      {{ $t(`planeparams.${param.name}`) }}
+                      {{  $t(`planeparams.${param.name}`)  }}
                     </option>
                   </b-select>
                   <b-select v-else :placeholder="$t('search.planename')" expanded disabled>
@@ -171,7 +171,7 @@
                   <b-select v-model="plot.y" :placeholder="$t('plot.selectparam')" expanded>
                     <option v-for="(param, paramIndex) of selectedParameters.filter(i => i.name != plot.x)"
                       :key="paramIndex" :value="param.name">
-                      {{ $t(`planeparams.${param.name}`) }}
+                      {{  $t(`planeparams.${param.name}`)  }}
                     </option>
                   </b-select>
                 </b-field>
@@ -182,7 +182,7 @@
 
           <div class="model-card__footer">
             <b-button type="is-danger" @click="isPlotModalActive = false">
-              {{ $t("close") }}
+              {{  $t("close")  }}
             </b-button>
           </div>
 
@@ -198,7 +198,6 @@
 import planeParameters from '@/assets/planeParameters.json';
 import planeCategories from '@/assets/planeCategories.json';
 import PlotComponent from '@/components/PlotComponent.vue';
-import * as ChartJS from 'chart.js';
 
 export default {
   components: {
@@ -230,9 +229,6 @@ export default {
       showPlots: false,
       readyToPlot: []
     };
-  },
-  created() {
-    ChartJS.Chart.register(ChartJS.LinearScale, ChartJS.ScatterController, ChartJS.PointElement, ChartJS.Tooltip);
   },
   methods: {
     filterClick(e) {
@@ -335,7 +331,6 @@ export default {
       this.plotArr.splice(index, 1);
     },
     plot() {
-      this.showPlots = true;
       this.readyToPlot = [];
       this.plotArr.forEach((plot) => {
         this.readyToPlot.push({
@@ -344,6 +339,13 @@ export default {
           y: plot.y
         });
       });
+      this.showPlots = true;
+      setImmediate(() => {
+        for (var i = 0; i < this.readyToPlot.length; i++) {
+          if (!this.$refs[`plot-${i}`]) return;
+          this.$refs[`plot-${i}`][0].draw();
+        }
+      })
     },
     plotTypeInput(i) {
       var plotObj = this.plotArr[i];
