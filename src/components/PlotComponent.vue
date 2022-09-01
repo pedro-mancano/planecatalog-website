@@ -11,7 +11,7 @@ import * as ChartJS from 'chart.js';
 export default {
     data() {
         return {
-            colorCycle: ['1f77b4', 'ff7f0e', '2ca02c', 'd62728', '9467bd', '8c564b', 'e377c2', '7f7f7f', 'bcbd22', '17becf'],
+            colorCycle: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'],
             ctx: null,
             currentChart: null,
         };
@@ -22,7 +22,7 @@ export default {
         'options'
     ],
     created() {
-        ChartJS.Chart.register(ChartJS.ScatterController, ChartJS.LinearScale, ChartJS.PointElement, ChartJS.Tooltip, ChartJS.Title);
+        ChartJS.Chart.register(...ChartJS.registerables);
     },
     updated() {
         this.draw();
@@ -40,7 +40,7 @@ export default {
     },
     methods: {
         generateColorForIndex(i) {
-            return '#' + this.colorCycle[i % this.colorCycle.length];
+            return this.colorCycle[i % this.colorCycle.length];
         },
         compareArrays(arr1, arr2) {
             if (arr1.length !== arr2.length) {
@@ -57,7 +57,11 @@ export default {
             if (this.currentChart) {
                 this.currentChart.destroy();
             }
-            console.log(this.type);
+            for (let key in this.options) {
+                if (!this.options[key]) {
+                    return;
+                }
+            }
             switch (this.type) {
                 case 'scatter':
                     this.drawTypeScatter();
@@ -71,55 +75,36 @@ export default {
             this.currentChart = new ChartJS.Chart(this.ctx, {
                 type: 'bar',
                 data: {
-                    datasets: this.data.map((el, i) => {
-                        return {
-                            label: el.name,
-                            data: [
-                                [el.name, el[this.options[1]]],
-                            ],
-                            backgroundColor: this.generateColorForIndex(i),
-                            borderColor: this.generateColorForIndex(i),
-                            borderWidth: 1,
-                        }
-                    })
+                    labels: this.data.map((d) => d.name),
+                    datasets: [{
+                        label: this.$t('planeparams.' + this.options[1]),
+                        data: this.data.map((d) => d[this.options[1]]),
+                        backgroundColor: this.colorCycle,
+                        borderColor: this.colorCycle,
+                        borderWidth: 1
+                    }]
                 },
                 options: {
                     scales: {
-                        x: {
-                            type: 'linear',
-                            position: 'bottom',
-                            title: {
-                                display: true,
-                                text: this.$t(`planeparams.${this.options[0]}`),
-                            },
-                        },
                         y: {
+                            beginAtZero: true,
                             type: 'linear',
-                            position: 'left',
                             title: {
                                 display: true,
                                 text: this.$t(`planeparams.${this.options[1]}`),
                             },
-                            beginAtZero: true,
                         }
                     },
-                    maintainAspectRatio: false,
-                    responsive: false,
                     plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function (data) {
-                                    var name = data.dataset.label;
-                                    return name;
-                                }
-                            }
-                        },
                         title: {
                             display: true,
-                            text: `${this.$t(`planeparams.${this.options[0]}`)} vs ${this.$t(`planeparams.${this.options[1]}`)}`,
+                            text: this.$t(`planeparams.${this.options[1]}`),
+                        },
+                        legend: {
+                            display: false,
                         }
                     }
-                },
+                }
             })
         },
         drawTypeScatter() {
@@ -161,6 +146,9 @@ export default {
                     maintainAspectRatio: false,
                     responsive: false,
                     plugins: {
+                        legend: {
+                            display: false,
+                        },
                         tooltip: {
                             callbacks: {
                                 label: function (data) {

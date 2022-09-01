@@ -24,6 +24,7 @@
     "search.plotconfig": "Configuração do Plot",
     "plot.selectparam": "Selecione o Parâmetro",
     "plot.selecttype": "Selecione o Tipo",
+    "plot.undefined": "Você deve selecionar um parâmetro (X e Y) para o plot",
     "units": {
         "m": "Metros",
         "ft": "Pés",

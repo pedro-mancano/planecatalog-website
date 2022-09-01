@@ -24,6 +24,7 @@
     "search.plotconfig": "Plot Configuration",
     "plot.selectparam": "Select Parameter",
     "plot.selecttype": "Select Plot Type",
+    "plot.undefined": "You must select a parameter (X and Y) for plot",
     "units": {
         "m": "Meter",
         "ft": "Feet",
