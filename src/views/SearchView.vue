@@ -10,7 +10,7 @@
       <b-field :label="$t('search.enterparameters')">
         <b-taginput ref="taginputParams" v-model="selectedParameters" :data="planeParameters" autocomplete
           :allow-new="false" open-on-focus icon="tag" field="name" :placeholder="$t('search.addatag')"
-          @typing="getFilteredTags_Parameters" @remove="removedParameters">
+          @typing="getFilteredTags_Parameters" @remove="removedParameters" @input="selectedParamChanged">
           <template slot-scope="props">
             <span>{{ $t(`planeparams.${props.option.name}`) }}
               <b-icon size="is-small" type="is-success" icon="check"
@@ -22,13 +22,22 @@
               closable @close="$refs.taginputParams.removeTag(index, $event)">
               {{ $t('planeparams.' + tag.name) }}
             </b-tag>
+            <b-tag v-for="(custom, index) in customParams" :key="`custom-` + index" type="is-primary is-light" rounded
+              :tabstop="false" ellipsis closable @close="removeCustomParam(index)">
+              {{ custom.name }}
+            </b-tag>
           </template>
         </b-taginput>
       </b-field>
-      <div class="buttons">
+      <div class="buttonsList">
         <b-button type="is-primary is-light" @click="openFilterModal">
           {{ `${$t('filters')} ${filtersList.length > 0 ? `(${filtersList.length})` : ''}` }}
         </b-button>
+        <b-button type="is-primary is-light" @click="openCustomParamModal">
+          {{ `${$t('customparams')} ${customParams.length > 0 ? `(${customParams.length})` : ''}` }}
+        </b-button>
+      </div>
+      <div class="searchButton">
         <b-button type="is-primary" @click="search" :loading="isTableLoading">{{ $t('search') }}</b-button>
       </div>
     </div>
@@ -50,7 +59,8 @@
 
     <div v-if="showPlots" class="plots" ref="plots">
       <PlotComponent v-for="(plot, index) in readyToPlot" :key="index" :data="checkedRows" :type="plot.type"
-        :options="[plot.x, plot.y]" :ref="`plot-${index}`">
+        :options="[plot.x, plot.y]" :log-scale="plot.log" :selectedParams="selectedParameters.concat(customParams)"
+        :ref="`plot-${index}`">
       </PlotComponent>
     </div>
 
@@ -156,22 +166,42 @@
                     <option value="column">{{ $t('column') }}</option>
                   </b-select>
                 </b-field>
-                <b-field label="X">
+                <b-field>
+                  <template #label>
+                    <div class="plot-axis">
+                      <span>X</span>
+                      <b-checkbox v-model="plot.logX" size="is-small" v-if="plot.type == 'scatter'">Log</b-checkbox>
+                    </div>
+                  </template>
                   <b-select v-if="plot.type != 'column'" v-model="plot.x" :placeholder="$t('plot.selectparam')"
                     expanded>
                     <option v-for="(param, paramIndex) of selectedParameters.filter(i => i.name != plot.y)"
                       :key="paramIndex" :value="param.name">
                       {{ $t(`planeparams.${param.name}`) }}
                     </option>
+                    <option v-for="(custom, customIndex) of customParams.filter(i => i.name != plot.y)"
+                      :key="'custom-' + customIndex" :value="custom.name">
+                      {{ custom.name }}
+                    </option>
                   </b-select>
                   <b-select v-else :placeholder="$t('search.planename')" expanded disabled>
                   </b-select>
                 </b-field>
                 <b-field label="Y">
+                  <template #label>
+                    <div class="plot-axis">
+                      <span>Y</span>
+                      <b-checkbox v-model="plot.logY" size="is-small">Log</b-checkbox>
+                    </div>
+                  </template>
                   <b-select v-model="plot.y" :placeholder="$t('plot.selectparam')" expanded>
                     <option v-for="(param, paramIndex) of selectedParameters.filter(i => i.name != plot.x)"
                       :key="paramIndex" :value="param.name">
                       {{ $t(`planeparams.${param.name}`) }}
+                    </option>
+                    <option v-for="(custom, customIndex) of customParams.filter(i => i.name != plot.x)"
+                      :key="'custom-' + customIndex" :value="custom.name">
+                      {{ custom.name }}
                     </option>
                   </b-select>
                 </b-field>
@@ -190,6 +220,11 @@
       </div>
 
     </b-modal>
+
+    <CustomParam ref="customParams" v-bind:enabled.sync="isCustomParamModalActive"
+      v-bind:customParams.sync="customParams"
+      v-bind:activeParams="selectedParameters.filter(e => e.type == 'number_range')">
+    </CustomParam>
   </div>
 </template>
 
@@ -198,10 +233,12 @@
 import planeParameters from '@/assets/planeParameters.json';
 import planeCategories from '@/assets/planeCategories.json';
 import PlotComponent from '@/components/PlotComponent.vue';
+import CustomParam from '@/components/CustomParam.vue';
 
 export default {
   components: {
-    PlotComponent
+    PlotComponent,
+    CustomParam
   },
   data() {
     return {
@@ -219,18 +256,28 @@ export default {
       selectedCategories: [],
       selectedParameters: [],
       filtersList: [],
-      isFilterModalActive: false,
       checkedRows: [],
-      isTableLoading: false,
       planeData: [],
       columns: [],
-      isPlotModalActive: false,
       plotArr: [],
+      readyToPlot: [],
+      customParams: [],
+      isFilterModalActive: false,
+      isPlotModalActive: false,
+      isCustomParamModalActive: false,
+      isTableLoading: false,
       showPlots: false,
-      readyToPlot: []
     };
   },
   methods: {
+    removeCustomParam(index) {
+      this.customParams.splice(index, 1);
+    },
+    selectedParamChanged() {
+      setImmediate(() => {
+        this.$refs.customParams.ensureParams();
+      });
+    },
     filterClick(e) {
       if (!this.filtersList.includes(this.selectedParameters[e])) {
         this.filtersList.push(this.selectedParameters[e]);
@@ -241,7 +288,10 @@ export default {
         return option.name
           .toString()
           .toLowerCase()
-          .indexOf(text.toLowerCase()) >= 0
+          .indexOf(text.toLowerCase()) >= 0 || this.$t('planeparams.' + option.name)
+            .toString()
+            .toLowerCase()
+            .indexOf(text.toLowerCase()) >= 0
       })
     },
     removedParameters(tag) {
@@ -259,6 +309,11 @@ export default {
     openFilterModal() {
       if (this.selectedParameters.length > 0) {
         this.isFilterModalActive = true;
+      }
+    },
+    openCustomParamModal() {
+      if (this.selectedParameters.length > 0) {
+        this.isCustomParamModalActive = true;
       }
     },
     removeFilter(e) {
@@ -296,6 +351,16 @@ export default {
         },
       }).then((e) => {
         this.planeData = e.data;
+        for (let i = 0; i < this.planeData.length; i++) {
+          for (var custom of this.customParams) {
+            var refData = {};
+            for (var ref of custom.refs) {
+              refData[ref.name] = this.planeData[i][ref.ref.name];
+            }
+            var value = custom.code.evaluate(refData);
+            this.planeData[i][custom.name] = parseFloat(value).toFixed(2);
+          }
+        }
         this.checkedRows = this.planeData;
       }).catch(() => {
 
@@ -310,25 +375,22 @@ export default {
         ...this.selectedParameters.map((el) => {
           return {
             field: el.name,
-            label: this.$t(`planeparams.${el.name}`),
+            label: `${this.$t(`planeparams.${el.name}`)}${el.unit ? ` [${el.unit}]` : ''}`,
           };
-        })]
+        }),
+        ...this.customParams.map((el) => {
+          return {
+            field: el.name,
+            label: `${el.name}${el.unit ? ` [${el.unit}]` : ''}`,
+          };
+        }),
+      ]
     },
     isMobile() {
       return window.innerWidth < 768;
     },
     plotModal() {
       this.isPlotModalActive = true;
-    },
-    addPlot() {
-      this.plotArr.push({
-        type: 'scatter',
-        x: undefined,
-        y: undefined
-      });
-    },
-    removePlot(index) {
-      this.plotArr.splice(index, 1);
     },
     toast(message, type = 'is-danger',) {
       this.$buefy.toast.open({
@@ -338,15 +400,29 @@ export default {
         type: `${type}`,
       })
     },
+    removePlot(index) {
+      this.plotArr.splice(index, 1);
+    },
+    addPlot() {
+      this.plotArr.push({
+        type: 'scatter',
+        x: undefined,
+        y: undefined,
+        logX: false,
+        logY: false,
+      });
+    },
     plot() {
       this.readyToPlot = [];
       this.plotArr.forEach((plot) => {
         this.readyToPlot.push({
-          type: plot.type,
-          x: plot.x,
-          y: plot.y
+          type: plot.type.trim(),
+          x: plot.x.trim(),
+          y: plot.y.trim(),
+          log: [plot.logX, plot.logY]
         });
       });
+      console.log(this.readyToPlot);
       this.showPlots = true;
       setImmediate(() => {
         for (var i = 0; i < this.readyToPlot.length; i++) {
@@ -383,6 +459,15 @@ export default {
     width: 380px;
     margin-bottom: 30px;
 
+    .searchButton {
+      margin-bottom: 10px;
+      width: 120px;
+
+      & :deep(.button) {
+        width: 100%;
+      }
+    }
+
 
     @media (max-width: 768px) {
       width: unset;
@@ -392,7 +477,18 @@ export default {
       display: table;
     }
 
-    .buttons>:last-child {
+    .buttonsList {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    :deep(.buttonsList>:first-child) {
+      width: 120px;
+    }
+
+    .buttonsList>:last-child {
       margin-left: auto;
     }
 
@@ -433,7 +529,7 @@ export default {
   }
 }
 
-::v-deep .animation-content.modal-content {
+:deep(.animation-content.modal-content) {
   overflow: visible;
 }
 
@@ -478,14 +574,16 @@ export default {
     padding: 0px 20px;
     width: 100%;
 
-    ::v-deep .field {
+    :deep(.field) {
       width: 30%;
     }
   }
 }
 
 .planeTable {
-  ::v-deep .b-table {
+  margin-bottom: 30px;
+
+  :deep(.b-table) {
     margin-bottom: 20px;
   }
 
@@ -501,13 +599,29 @@ export default {
       margin-left: auto;
     }
   }
+
 }
 
 .plots {
-  margin-top: 30px;
+  margin-bottom: 30px;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
   flex-wrap: wrap;
+}
+
+.plot-axis {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+
+  &>span {
+    margin-right: 10px;
+  }
+
+  & :deep(.control-label) {
+    padding-left: 0.125rem;
+  }
 }
 </style>

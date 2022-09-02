@@ -14,12 +14,17 @@ export default {
             colorCycle: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'],
             ctx: null,
             currentChart: null,
+            units: [
+
+            ]
         };
     },
     props: [
         'data',
         'type',
-        'options'
+        'options',
+        'log-scale',
+        'selectedParams'
     ],
     created() {
         ChartJS.Chart.register(...ChartJS.registerables);
@@ -28,8 +33,9 @@ export default {
         this.draw();
     },
     mounted() {
-        this.$refs.canv.height = 400;
-        this.$refs.canv.width = 400;
+        var isMobile = window.innerWidth < 768;
+        this.$refs.canv.height = isMobile ? window.innerWidth * 0.8 : 400;
+        this.$refs.canv.width = isMobile ? window.innerWidth * 0.8 : 400;
         this.ctx = this.$refs.canv.getContext('2d');
         this.draw();
     },
@@ -39,6 +45,16 @@ export default {
         }
     },
     methods: {
+        generateUnits() {
+            this.units = [
+                `${this.searchParamByName(this.options[0]).unit ? ' [' + this.searchParamByName(this.options[0]).unit + ']' : ''}`,
+                `${this.searchParamByName(this.options[1]).unit ? ' [' + this.searchParamByName(this.options[1]).unit + ']' : ''}`
+            ]
+        },
+        searchParamByName(i) {
+            var found = this.selectedParams.find((param) => param.name == i.trim());
+            return found || {};
+        },
         generateColorForIndex(i) {
             return this.colorCycle[i % this.colorCycle.length];
         },
@@ -53,7 +69,14 @@ export default {
             }
             return true;
         },
+        getScale(axis) {
+            if (this.logScale[axis]) {
+                return 'logarithmic';
+            }
+            return 'linear';
+        },
         draw() {
+            console.log('PlotComponent draw', this.data, this.type, this.options);
             if (this.currentChart) {
                 this.currentChart.destroy();
             }
@@ -62,6 +85,7 @@ export default {
                     return;
                 }
             }
+            this.generateUnits();
             switch (this.type) {
                 case 'scatter':
                     this.drawTypeScatter();
@@ -71,13 +95,18 @@ export default {
                     break;
             }
         },
+        betterTranslate(text) {
+            var search = this.searchParamByName(text);
+            console.log(search);
+            return search.custom ? search.name : this.$t('planeparams.' + search.name);
+        },
         drawTypeColumns() {
             this.currentChart = new ChartJS.Chart(this.ctx, {
                 type: 'bar',
                 data: {
                     labels: this.data.map((d) => d.name),
                     datasets: [{
-                        label: this.$t('planeparams.' + this.options[1]),
+                        label: this.betterTranslate(this.options[1]),
                         data: this.data.map((d) => d[this.options[1]]),
                         backgroundColor: this.colorCycle,
                         borderColor: this.colorCycle,
@@ -87,18 +116,18 @@ export default {
                 options: {
                     scales: {
                         y: {
-                            beginAtZero: true,
-                            type: 'linear',
+                            //beginAtZero: true,
+                            type: this.getScale(1),
                             title: {
                                 display: true,
-                                text: this.$t(`planeparams.${this.options[1]}`),
+                                text: `${this.betterTranslate(this.options[1])}${this.units[1]}`,
                             },
                         }
                     },
                     plugins: {
                         title: {
                             display: true,
-                            text: this.$t(`planeparams.${this.options[1]}`),
+                            text: `${this.betterTranslate(this.options[1])}${this.units[1]}`,
                         },
                         legend: {
                             display: false,
@@ -127,19 +156,19 @@ export default {
                 options: {
                     scales: {
                         x: {
-                            type: 'linear',
+                            type: this.getScale(0),
                             position: 'bottom',
                             title: {
                                 display: true,
-                                text: this.$t(`planeparams.${this.options[0]}`),
+                                text: `${this.betterTranslate(this.options[0])}${this.units[0]}`,
                             },
                         },
                         y: {
-                            type: 'linear',
+                            type: this.getScale(1),
                             position: 'left',
                             title: {
                                 display: true,
-                                text: this.$t(`planeparams.${this.options[1]}`),
+                                text: `${this.betterTranslate(this.options[1])}${this.units[1]}`,
                             },
                         }
                     },
@@ -159,7 +188,7 @@ export default {
                         },
                         title: {
                             display: true,
-                            text: `${this.$t(`planeparams.${this.options[0]}`)} vs ${this.$t(`planeparams.${this.options[1]}`)}`,
+                            text: `${this.betterTranslate(this.options[0])}${this.units[0]} vs ${this.betterTranslate(this.options[1])}${this.units[1]}`,
                         }
                     }
                 },

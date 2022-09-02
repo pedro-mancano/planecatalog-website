@@ -46,11 +46,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.customTableFlex {
-    //display: flex;
-}
-
-::v-deep .pagination {
+//.customTableFlex {
+//    display: flex;
+//}
+:deep(.pagination) {
     margin: 0px;
 }
 </style>
