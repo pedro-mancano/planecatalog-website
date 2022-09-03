@@ -9,6 +9,13 @@ import VueAxios from 'vue-axios'
 
 const production = process.env.NODE_ENV === 'production';
 
+/*
+TODO List:
+- Pizza Graph
+- Add custom units
+- Download data (table & plots) as CSV / JSON / XML / PDF / PNG / XLSX
+*/
+
 Vue.use(VueAxios, axios)
 Vue.use(Buefy, {
   defaultIconPack: 'fa',

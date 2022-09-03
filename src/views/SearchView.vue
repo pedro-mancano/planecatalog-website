@@ -394,7 +394,7 @@ export default {
     },
     toast(message, type = 'is-danger',) {
       this.$buefy.toast.open({
-        duration: 3000,
+        duration: 5000,
         message: `${message}`,
         position: 'is-bottom',
         type: `${type}`,
@@ -414,7 +414,22 @@ export default {
     },
     plot() {
       this.readyToPlot = [];
-      this.plotArr.forEach((plot) => {
+      this.plotArr.forEach((plot, plotIndex) => {
+        if (!plot.x || !plot.y) {
+          this.toast(`${this.$t('plot.undefined')} ${plotIndex + 1}`, 'is-danger');
+          return;
+        }
+
+        let x = this.selectedParameters.find(el => el.name === plot.x) || this.customParams.find(el => el.name === plot.x);
+        let y = this.selectedParameters.find(el => el.name === plot.y) || this.customParams.find(el => el.name === plot.y);
+
+        if (!x || !y) {
+          this.toast(`${this.$t('plot.undefined')} ${plotIndex + 1}`, 'is-danger');
+          plot.x = x ? plot.x : undefined;
+          plot.y = y ? plot.y : undefined;
+          return;
+        }
+
         this.readyToPlot.push({
           type: plot.type.trim(),
           x: plot.x.trim(),

@@ -161,7 +161,6 @@ export default {
                 code: null,
                 custom: true
             });
-            console.log('addParam', this.params[this.params.length - 1]);
         },
         remove(param) {
             this.params.splice(this.params.indexOf(param), 1);
@@ -205,6 +204,7 @@ export default {
                     return;
                 }
             }
+            this.$emit('save', this.localCustomParams, this.params);
             this.localCustomParams = this.params;
             this.localEnabled = false;
         },
@@ -212,12 +212,10 @@ export default {
             this.params = [];
         },
         ensureParams() {
-            console.log('Ensuring Everything is OK');
             var toRemoveList = [];
             for (var param of this.localCustomParams) {
                 for (var ref of param.refs) {
                     if (!this.activeParams.includes(ref.ref)) {
-                        console.log('Param has %s ref, but it is not active', ref.ref.name);
                         toRemoveList.push(param);
                     }
                 }

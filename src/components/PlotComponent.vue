@@ -76,7 +76,6 @@ export default {
             return 'linear';
         },
         draw() {
-            console.log('PlotComponent draw', this.data, this.type, this.options);
             if (this.currentChart) {
                 this.currentChart.destroy();
             }
@@ -97,7 +96,6 @@ export default {
         },
         betterTranslate(text) {
             var search = this.searchParamByName(text);
-            console.log(search);
             return search.custom ? search.name : this.$t('planeparams.' + search.name);
         },
         drawTypeColumns() {
@@ -116,7 +114,7 @@ export default {
                 options: {
                     scales: {
                         y: {
-                            //beginAtZero: true,
+                            beginAtZero: true,
                             type: this.getScale(1),
                             title: {
                                 display: true,
