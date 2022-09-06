@@ -50,6 +50,7 @@
         </template>
       </b-table>
       <div class="plotButtons">
+        <b-button type="is-primary is-light" @click="downloadTable">{{ $t('search.download') }}</b-button>
         <b-button type="is-primary is-light" @click="plotModal">
           {{ `${$t('search.plotconfig')} ${plotArr.length > 0 ? `(${plotArr.length})` : ''}` }}
         </b-button>
@@ -209,7 +210,6 @@
             </div>
           </div>
 
-
           <div class="model-card__footer">
             <b-button type="is-danger" @click="isPlotModalActive = false">
               {{ $t("close") }}
@@ -234,6 +234,7 @@ import planeParameters from '@/assets/planeParameters.json';
 import planeCategories from '@/assets/planeCategories.json';
 import PlotComponent from '@/components/PlotComponent.vue';
 import CustomParam from '@/components/CustomParam.vue';
+import * as XLSX from "xlsx";
 
 export default {
   components: {
@@ -413,6 +414,16 @@ export default {
       });
     },
     plot() {
+      if (this.checkedRows.length === 0) {
+        this.toast(this.$t('search.nothingtoplot'));
+        return;
+      }
+
+      if (this.plotArr.length === 0) {
+        this.toast(this.$t('search.nothingtoplot'));
+        return;
+      }
+
       this.readyToPlot = [];
       this.plotArr.forEach((plot, plotIndex) => {
         if (!plot.x || !plot.y) {
@@ -437,7 +448,6 @@ export default {
           log: [plot.logX, plot.logY]
         });
       });
-      console.log(this.readyToPlot);
       this.showPlots = true;
       setImmediate(() => {
         for (var i = 0; i < this.readyToPlot.length; i++) {
@@ -455,6 +465,36 @@ export default {
       if (plotObj.type == 'column') {
         plotObj.x = 'name';
       }
+    },
+    downloadTable() {
+      if (this.checkedRows.length === 0) {
+        this.toast(this.$t('search.nothingtodownload'));
+        return;
+      }
+
+      var workbook = XLSX.utils.book_new();
+      var worksheet = XLSX.utils.aoa_to_sheet([
+        [this.$t('search.planename'), ...this.planeParameters.map((el) => {
+          return this.$t(`planeparams.${el.name}`) || el;
+        }), ...this.customParams.map((el) => {
+          return el.name;
+        })],
+        ...this.checkedRows.map((el, i) => {
+          var val = this.planeParameters.map((e) => e.name).map((key) => {
+            return el[key];
+          });
+          val.unshift(el.name);
+          for (var custom of this.customParams) {
+            val.push(this.checkedRows[i][custom.name]);
+          }
+          return val;
+        })
+      ]);
+
+      worksheet.A1.v = this.$t('search.planename');
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      XLSX.writeFile(workbook, 'data.xlsx');
     }
   }
 }
@@ -472,7 +512,7 @@ export default {
     flex-direction: column;
     max-width: 380px;
     width: 380px;
-    margin-bottom: 30px;
+    margin-bottom: 28px;
 
     .searchButton {
       margin-bottom: 10px;
@@ -596,7 +636,7 @@ export default {
 }
 
 .planeTable {
-  margin-bottom: 30px;
+  margin-bottom: 28px;
 
   :deep(.b-table) {
     margin-bottom: 20px;
@@ -610,15 +650,15 @@ export default {
     flex-wrap: nowrap;
     align-items: flex-start;
 
-    &> :last-child {
-      margin-left: auto;
+    &> :not(:last-child) {
+      margin-right: 10px;
     }
   }
 
 }
 
 .plots {
-  margin-bottom: 30px;
+  margin-bottom: 28px;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
