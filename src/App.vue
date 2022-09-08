@@ -21,18 +21,18 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #B3AFB3;
+  background: #b3afb3;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #B3AFB3;
+  background: #b3afb3;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F0F0F0;
+  background: #f0f0f0;
   border-radius: 15px;
-  box-shadow: inset 0px 0px 0px 0px #F0F0F0;
+  box-shadow: inset 0px 0px 0px 0px #f0f0f0;
 }
 
 @import "bulma/sass/utilities/functions";
@@ -44,14 +44,14 @@ $speed-slower: 250ms !default;
 
 $info: #167df0 !default;
 
-$input-arrow: $primary  !default;
+$input-arrow: $primary !default;
 
-$link: $primary  !default;
-$link-invert: $primary-invert  !default;
-$link-visited: $grey  !default;
-$link-focus-border: $primary  !default;
+$link: $primary !default;
+$link-invert: $primary-invert !default;
+$link-visited: $grey !default;
+$link-focus-border: $primary !default;
 
-$label-weight: $weight-semibold  !default;
+$label-weight: $weight-semibold !default;
 
 @import "buefy/src/scss/utils/_helpers.scss";
 @import "buefy/src/scss/utils/_animations.scss";
@@ -71,7 +71,7 @@ $label-weight: $weight-semibold  !default;
 export default {
   created() {
     // set language from store
-    //this.$i18n.locale = this.$store.state.language;
+    this.$store.commit("updateLanguage");
   },
-}
+};
 </script>

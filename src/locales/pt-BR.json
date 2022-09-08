@@ -40,6 +40,8 @@
     "customparam.formulahelp": "Você pode criar sua própria equação que será calculada na hora da plotagem. As variáveis na função representam os parâmetros do avião. Por exemplo, se você quiser criar um parâmetro que representa a carga útil do avião, você pode usar a seguinte fórmula: f(PesoVazio, PesoTotal) = PesoTotal - PesoVazio. A variável PesoVazio representa o parâmetro PesoVazio do avião. Você pode usar as seguintes variáveis:",
     "customparam.norefs": "Referencias não encontradas",
     "customparam.error": "Falha ao criar o parâmetro personalizado, revise os campos",
+    "unitofmeasure": "Unidade de Medida",
+    "createunit": "Criar Unidade",
     "units": {
         "m": "Metros",
         "ft": "Pés",

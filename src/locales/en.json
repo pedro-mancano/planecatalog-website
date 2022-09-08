@@ -40,6 +40,8 @@
     "customparam.formulahelp": "You can create your own equation that will be calculate when you do a plot with this param. The variables of the function represent a parameter of the plane. For example, if you want to create a parameter that represents the plane's util weight, you can use the formula: f(emptyWeight, totalWeight) = totalWeight - emptyWeight. The variable emptyWeight represents the plane's emptyWeight parameter. You can use the following variables:",
     "customparam.norefs": "No references found",
     "customparam.error": "Failed to save custom parameter, please check the fields",
+    "unitofmeasure": "Unit of Measure",
+    "createunit": "Create Unit",
     "units": {
         "m": "Meter",
         "ft": "Feet",
