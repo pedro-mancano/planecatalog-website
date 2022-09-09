@@ -31,7 +31,7 @@
               v-for="(unit, unitIndex) in units"
               :key="unitIndex"
               @click="changeUnit(unitIndex)">
-              {{ unit.label }}
+              {{ unit.custom ? unit.label : $t(unit.label) }}
             </b-dropdown-item>
 
             <b-dropdown-item custom aria-role="listitem">

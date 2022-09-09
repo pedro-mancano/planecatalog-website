@@ -517,6 +517,14 @@ export default {
       })
         .then((e) => {
           this.planeData = e.data;
+          this.planeData.forEach((el) => {
+            for (let key of this.selectedParameters) {
+              el[key.name] = this.$store.getters.convertVale(
+                key.name,
+                el[key.name]
+              );
+            }
+          });
           for (let i = 0; i < this.planeData.length; i++) {
             for (var custom of this.customParams) {
               var refData = {};

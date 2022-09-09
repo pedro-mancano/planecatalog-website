@@ -42,6 +42,7 @@
     "customparam.error": "Falha ao criar o parâmetro personalizado, revise os campos",
     "unitofmeasure": "Unidade de Medida",
     "createunit": "Criar Unidade",
+    "units:SI": "Sistema Internacional",
     "units": {
         "m": "Metros",
         "ft": "Pés",

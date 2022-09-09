@@ -42,6 +42,7 @@
     "customparam.error": "Failed to save custom parameter, please check the fields",
     "unitofmeasure": "Unit of Measure",
     "createunit": "Create Unit",
+    "units:SI": "International System of Units",
     "units": {
         "m": "Meter",
         "ft": "Feet",

@@ -30,7 +30,8 @@ export default new Vuex.Store({
     unitList: {
       "SI": {
         name: "SI",
-        label: "International System of Units",
+        label: "units:SI",
+        custom: false,
         parameters: planeParameters.reduce((acc, curr) => (acc[curr.name] = {
           name: curr.name,
           unit: curr.unit,
@@ -49,6 +50,7 @@ export default new Vuex.Store({
       return state.unitList[unitName];
     },
     convertVale: state => (unitName, value) => {
+      console.log(unitName, value);
       return state.unitList[state.currentUnit].parameters[unitName].func(value);
     }
   },
