@@ -326,7 +326,6 @@ export default {
   methods: {
     removeCustomParam(index) {
       this.customParams.splice(index, 1);
-      console.log('REMOVE CUSTOM PARAM');
       this.updateCustomParams();
       if (this.columns != 0) {
         this.generateColumns();

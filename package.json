@@ -10,6 +10,7 @@
   "dependencies": {
     "buefy": "^0.9.21",
     "chart.js": "^3.9.1",
+    "chartjs-plugin-datalabels": "^2.1.0",
     "core-js": "^3.8.3",
     "mathjs": "^11.1.0",
     "vue": "^2.6.14",
