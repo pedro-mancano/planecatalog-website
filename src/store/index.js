@@ -1,12 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import i18n from '@/plugins/vue-i18n'
-
 import PlaneParameters from '@/assets/planeParameters.json';
 
 Vue.use(Vuex)
 
-var planeParameters = PlaneParameters.parameters;
+const planeParameters = PlaneParameters.parameters;
 
 function getBrowserLanguage() {
   let language = navigator.language || navigator.userLanguage;
@@ -41,6 +40,7 @@ export default new Vuex.Store({
     },
     currentUnit: localStorage.getItem('unit') || "SI",
     language: localStorage.getItem('language') || convertLanguage(getBrowserLanguage()),
+    planeList: [],
   },
   getters: {
     getUnitList: state => {
@@ -52,6 +52,9 @@ export default new Vuex.Store({
     convertVale: state => (unitName, value) => {
       console.log(unitName, value);
       return state.unitList[state.currentUnit].parameters[unitName].func(value);
+    },
+    getPlaneList: state => {
+      return state.planeList;
     }
   },
   mutations: {
@@ -73,6 +76,9 @@ export default new Vuex.Store({
     updateLanguage(state) {
       state.language = localStorage.getItem('language') || convertLanguage(getBrowserLanguage());
       i18n.locale = state.language;
+    },
+    setPlaneList(state, payload) {
+      state.planeList = payload;
     }
   },
   actions: {

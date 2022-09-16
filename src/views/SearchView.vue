@@ -3,104 +3,56 @@
   <div class="searchContent">
     <div class="filterContent">
       <b-field :label="$t('search.entercategories')">
-        <b-taginput
-          v-model="selectedCategories"
-          :data="planeCategories"
-          autocomplete
-          :allow-new="false"
-          open-on-focus
-          field="name"
-          icon="tag"
-          :placeholder="$t('search.addatag')"
-          @typing="getFilteredTags_Categories">
+        <b-taginput v-model="selectedCategories" :data="planeCategories" autocomplete :allow-new="false" open-on-focus
+          field="name" icon="tag" :placeholder="$t('search.addatag')" @typing="getFilteredTags_Categories">
         </b-taginput>
       </b-field>
       <b-field :label="$t('search.enterparameters')">
-        <b-taginput
-          ref="taginputParams"
-          v-model="selectedParameters"
-          :data="planeParameters"
-          autocomplete
-          :allow-new="false"
-          open-on-focus
-          icon="tag"
-          field="name"
-          :placeholder="$t('search.addatag')"
-          @typing="getFilteredTags_Parameters"
-          @remove="removedParameters"
-          @input="selectedParamChanged">
+        <b-taginput ref="taginputParams" v-model="selectedParameters" :data="planeParameters" autocomplete
+          :allow-new="false" open-on-focus icon="tag" field="name" :placeholder="$t('search.addatag')"
+          @typing="getFilteredTags_Parameters" @remove="removedParameters" @input="selectedParamChanged">
           <template slot-scope="props">
-            <span
-              >{{ $t(`planeparams.${props.option.name}`) }}
-              <b-icon
-                size="is-small"
-                type="is-success"
-                icon="check"
+            <span>{{ $t(`planeparams.${props.option.name}`) }}
+              <b-icon size="is-small" type="is-success" icon="check"
                 v-if="selectedParameters.indexOf(props.option) >= 0"></b-icon>
             </span>
           </template>
           <template #selected="props">
-            <b-tag
-              v-for="(tag, index) in props.tags"
-              :key="index"
-              type="is-primary"
-              rounded
-              :tabstop="false"
-              ellipsis
-              closable
-              @close="$refs.taginputParams.removeTag(index, $event)">
+            <b-tag v-for="(tag, index) in props.tags" :key="index" type="is-primary" rounded :tabstop="false" ellipsis
+              closable @close="$refs.taginputParams.removeTag(index, $event)">
               {{ $t("planeparams." + tag.name) }}
             </b-tag>
-            <b-tag
-              v-for="(custom, index) in customParams"
-              :key="`custom-` + index"
-              type="is-primary is-light"
-              rounded
-              :tabstop="false"
-              ellipsis
-              closable
-              @close="removeCustomParam(index)">
+            <b-tag v-for="(custom, index) in customParams" :key="`custom-` + index" type="is-primary is-light" rounded
+              :tabstop="false" ellipsis closable @close="removeCustomParam(index)">
               {{ custom.name }}
             </b-tag>
           </template>
         </b-taginput>
       </b-field>
       <div class="buttonsList">
-        <b-button
-          type="is-primary is-light"
-          @click="openFilterModal"
-          icon-left="filter">
+        <b-button type="is-primary is-light" @click="openFilterModal" icon-left="filter">
           {{
-            `${$t("filters")} ${
-              filtersList.length > 0 ? `(${filtersList.length})` : ""
-            }`
+          `${$t("filters")} ${
+          filtersList.length > 0 ? `(${filtersList.length})` : ""
+          }`
           }}
         </b-button>
         <b-button type="is-primary is-light" @click="openCustomParamModal">
           {{
-            `${$t("customparams")} ${
-              customParams.length > 0 ? `(${customParams.length})` : ""
-            }`
+          `${$t("customparams")} ${
+          customParams.length > 0 ? `(${customParams.length})` : ""
+          }`
           }}
         </b-button>
       </div>
       <div class="searchButton">
-        <b-button
-          type="is-primary"
-          @click="search"
-          :loading="isTableLoading"
-          icon-left="search"
-          >{{ $t("search") }}</b-button
-        >
+        <b-button type="is-primary" @click="search" :loading="isTableLoading" icon-left="search">{{ $t("search") }}
+        </b-button>
       </div>
     </div>
 
     <div class="planeTable" v-if="columns.length > 0">
-      <b-table
-        :data="planeData"
-        :columns="columns"
-        :checked-rows.sync="checkedRows"
-        :loading="isTableLoading"
+      <b-table :data="planeData" :columns="columns" :checked-rows.sync="checkedRows" :loading="isTableLoading"
         checkable>
         <template #bottom-left>
           <!--b>Total checked</b>: {{ checkedRows.length }} <div-->
@@ -108,38 +60,29 @@
       </b-table>
       <div class="plotButtons">
         <b-button type="is-primary is-light" @click="downloadTable">{{
-          $t("search.download")
+        $t("search.download")
         }}</b-button>
         <b-button type="is-primary is-light" @click="plotModal">
           {{
-            `${$t("search.plotconfig")} ${
-              plotArr.length > 0 ? `(${plotArr.length})` : ""
-            }`
+          `${$t("search.plotconfig")} ${
+          plotArr.length > 0 ? `(${plotArr.length})` : ""
+          }`
           }}
         </b-button>
         <b-button type="is-primary" @click="plot">{{
-          $t("search.plot")
+        $t("search.plot")
         }}</b-button>
       </div>
     </div>
 
     <div v-if="showPlots" class="plots" ref="plots">
-      <PlotComponent
-        v-for="(plot, index) in readyToPlot"
-        :key="index"
-        :data="checkedRows"
-        :type="plot.type"
-        :options="[plot.x, plot.y]"
-        :log-scale="plot.log"
-        :selectedParams="selectedParameters.concat(customParams)"
+      <PlotComponent v-for="(plot, index) in readyToPlot" :key="index" :data="checkedRows" :type="plot.type"
+        :options="[plot.x, plot.y]" :log-scale="plot.log" :selectedParams="selectedParameters.concat(customParams)"
         :ref="`plot-${index}`">
       </PlotComponent>
     </div>
 
-    <b-modal
-      v-model="isFilterModalActive"
-      :width="isMobile() ? '92vw' : '640px'"
-      scroll="keep">
+    <b-modal v-model="isFilterModalActive" :width="isMobile() ? '92vw' : '640px'" scroll="keep">
       <div class="modalContainer">
         <div class="model-card">
           <div class="model-card__header">
@@ -156,17 +99,10 @@
                 </b-button>
               </template>
 
-              <b-dropdown-item
-                arial-role="listitem"
-                v-for="(item, itemIndex) of selectedParameters"
-                :key="itemIndex"
+              <b-dropdown-item arial-role="listitem" v-for="(item, itemIndex) of selectedParameters" :key="itemIndex"
                 @click="filterClick(itemIndex)">
-                <span
-                  >{{ $t(`planeparams.${item.name}`) }}
-                  <b-icon
-                    v-if="filtersList.indexOf(item) >= 0"
-                    type="is-success"
-                    icon="check">
+                <span>{{ $t(`planeparams.${item.name}`) }}
+                  <b-icon v-if="filtersList.indexOf(item) >= 0" type="is-success" icon="check">
                   </b-icon>
                 </span>
               </b-dropdown-item>
@@ -174,67 +110,45 @@
           </div>
 
           <div class="filterArr">
-            <div
-              v-for="(tag, tagIndex) of filtersList"
-              :key="tagIndex"
-              class="filterItem">
+            <div v-for="(tag, tagIndex) of filtersList" :key="tagIndex" class="filterItem">
               <div v-if="tag.type == 'number'">
-                <b-field
-                  :message="
-                    tag.unit
-                      ? `${$t('search.unitin')}: ${
-                          $t('units')[tag.unit.trim()]
-                        }`
-                      : ''
-                  ">
+                <b-field :message="
+                  tag.unit
+                    ? `${$t('search.unitin')}: ${
+                        $t('units')[tag.unit.trim()]
+                      }`
+                    : ''
+                ">
                   <template #label>
-                    <span
-                      >{{ $t(`planeparams.${tag.name}`) }}
-                      <b-icon
-                        pack="fas"
-                        type="is-danger"
-                        icon="xmark"
-                        class="filterRemoveIcon"
+                    <span>{{ $t(`planeparams.${tag.name}`) }}
+                      <b-icon pack="fas" type="is-danger" icon="xmark" class="filterRemoveIcon"
                         @click.native="removeFilter(tag)">
-                      </b-icon
-                    ></span>
+                      </b-icon>
+                    </span>
                   </template>
-                  <b-numberinput
-                    v-model="tag.value"
-                    :min="tag.range[0]"
-                    :max="tag.range[1]"
+                  <b-numberinput v-model="tag.value" :min="tag.range[0]" :max="tag.range[1]"
                     controls-position="compact">
                   </b-numberinput>
                 </b-field>
               </div>
               <div v-if="tag.type == 'number_range'">
-                <b-field
-                  :message="
-                    tag.unit
-                      ? `${$t('search.unitin')}: ${
-                          $t('units')[tag.unit.trim()]
-                        }`
-                      : ''
-                  ">
+                <b-field :message="
+                  tag.unit
+                    ? `${$t('search.unitin')}: ${
+                        $t('units')[tag.unit.trim()]
+                      }`
+                    : ''
+                ">
                   <template #label>
-                    <span
-                      >{{ $t(`planeparams.${tag.name}`) }}
-                      <b-icon
-                        pack="fas"
-                        type="is-danger"
-                        icon="xmark"
-                        class="filterRemoveIcon"
+                    <span>{{ $t(`planeparams.${tag.name}`) }}
+                      <b-icon pack="fas" type="is-danger" icon="xmark" class="filterRemoveIcon"
                         @click.native="removeFilter(tag)">
-                      </b-icon
-                    ></span>
+                      </b-icon>
+                    </span>
                   </template>
                   <div>
                     <span>{{ `${tag.value[0]} - ${tag.value[1]}` }}</span>
-                    <b-slider
-                      v-model="tag.value"
-                      :min="tag.range[0]"
-                      :max="tag.range[1]"
-                      :step="1">
+                    <b-slider v-model="tag.value" :min="tag.range[0]" :max="tag.range[1]" :step="1">
                     </b-slider>
                   </div>
                 </b-field>
@@ -251,10 +165,7 @@
       </div>
     </b-modal>
 
-    <b-modal
-      v-model="isPlotModalActive"
-      :width="isMobile() ? '92vw' : '640px'"
-      scroll="keep">
+    <b-modal v-model="isPlotModalActive" :width="isMobile() ? '92vw' : '640px'" scroll="keep">
       <div class="modalContainer">
         <div class="model-card">
           <div class="model-card__header">
@@ -270,105 +181,86 @@
           </div>
 
           <div class="plotArr">
-            <div
-              v-for="(plot, plotIndex) of plotArr"
-              :key="plotIndex"
-              class="plotItem">
+            <div v-for="(plot, plotIndex) of plotArr" :key="plotIndex" class="plotItem">
               <div class="plotContainer">
                 <b-field>
                   <template #label>
-                    <span
-                      >{{ `Plot ${plotIndex + 1}` }}
-                      <b-icon
-                        pack="fas"
-                        type="is-danger"
-                        icon="xmark"
-                        class="filterRemoveIcon"
+                    <span>{{ `Plot ${plotIndex + 1}` }}
+                      <b-icon pack="fas" type="is-danger" icon="xmark" class="filterRemoveIcon"
                         @click.native="removePlot(plotIndex)">
-                      </b-icon
-                    ></span>
+                      </b-icon>
+                    </span>
                   </template>
-                  <b-select
-                    v-model="plot.type"
-                    :placeholder="$t('plot.selecttype')"
-                    @input="plotTypeInput(plotIndex)"
+                  <b-select v-model="plot.type" :placeholder="$t('plot.selecttype')" @input="plotTypeInput(plotIndex)"
                     expanded>
                     <option value="scatter">{{ $t("scatter") }}</option>
-                    <option value="column">{{ $t("column") }}</option>
+                    <option value="bar">{{ $t("bar") }}</option>
+                    <option value="pie">{{ $t("pie") }}</option>
                   </b-select>
                 </b-field>
-                <b-field>
-                  <template #label>
-                    <div class="plot-axis">
-                      <span>X</span>
-                      <b-checkbox
-                        v-model="plot.logX"
-                        size="is-small"
-                        v-if="plot.type == 'scatter'"
-                        >Log</b-checkbox
-                      >
-                    </div>
-                  </template>
-                  <b-select
-                    v-if="plot.type != 'column'"
-                    v-model="plot.x"
-                    :placeholder="$t('plot.selectparam')"
-                    expanded>
-                    <option
-                      v-for="(param, paramIndex) of selectedParameters.filter(
+                <div v-if="plot.type == 'scatter' || plot.type == 'bar'" class="plotParams1">
+                  <b-field>
+                    <template #label>
+                      <div class="plot-axis">
+                        <span>X</span>
+                        <b-checkbox v-model="plot.logX" size="is-small" v-if="plot.type == 'scatter'">Log</b-checkbox>
+                      </div>
+                    </template>
+                    <b-select v-if="plot.type == 'scatter'" v-model="plot.x" :placeholder="$t('plot.selectparam')"
+                      expanded>
+                      <option v-for="(param, paramIndex) of selectedParameters.filter(
                         (i) => i.name != plot.y
-                      )"
-                      :key="paramIndex"
-                      :value="param.name">
-                      {{ $t(`planeparams.${param.name}`) }}
-                    </option>
-                    <option
-                      v-for="(custom, customIndex) of customParams.filter(
+                      )" :key="paramIndex" :value="param.name">
+                        {{ $t(`planeparams.${param.name}`) }}
+                      </option>
+                      <option v-for="(custom, customIndex) of customParams.filter(
                         (i) => i.name != plot.y
-                      )"
-                      :key="'custom-' + customIndex"
-                      :value="custom.name">
-                      {{ custom.name }}
-                    </option>
-                  </b-select>
-                  <b-select
-                    v-else
-                    :placeholder="$t('search.planename')"
-                    expanded
-                    disabled>
-                  </b-select>
-                </b-field>
-                <b-field label="Y">
-                  <template #label>
-                    <div class="plot-axis">
-                      <span>Y</span>
-                      <b-checkbox v-model="plot.logY" size="is-small"
-                        >Log</b-checkbox
-                      >
-                    </div>
-                  </template>
-                  <b-select
-                    v-model="plot.y"
-                    :placeholder="$t('plot.selectparam')"
-                    expanded>
-                    <option
-                      v-for="(param, paramIndex) of selectedParameters.filter(
+                      )" :key="'custom-' + customIndex" :value="custom.name">
+                        {{ custom.name }}
+                      </option>
+                    </b-select>
+                    <b-select v-if="plot.type == 'bar'" :placeholder="$t('search.planename')" expanded disabled>
+                    </b-select>
+                  </b-field>
+                  <b-field label="Y">
+                    <template #label>
+                      <div class="plot-axis">
+                        <span>Y</span>
+                        <b-checkbox v-model="plot.logY" size="is-small">Log</b-checkbox>
+                      </div>
+                    </template>
+                    <b-select v-model="plot.y" :placeholder="$t('plot.selectparam')" expanded>
+                      <option v-for="(param, paramIndex) of selectedParameters.filter(
                         (i) => i.name != plot.x
-                      )"
-                      :key="paramIndex"
-                      :value="param.name">
-                      {{ $t(`planeparams.${param.name}`) }}
-                    </option>
-                    <option
-                      v-for="(custom, customIndex) of customParams.filter(
+                      )" :key="paramIndex" :value="param.name">
+                        {{ $t(`planeparams.${param.name}`) }}
+                      </option>
+                      <option v-for="(custom, customIndex) of customParams.filter(
                         (i) => i.name != plot.x
-                      )"
-                      :key="'custom-' + customIndex"
-                      :value="custom.name">
-                      {{ custom.name }}
-                    </option>
-                  </b-select>
-                </b-field>
+                      )" :key="'custom-' + customIndex" :value="custom.name">
+                        {{ custom.name }}
+                      </option>
+                    </b-select>
+                  </b-field>
+                </div>
+                <div v-if="plot.type == 'pie'" class="plotParams2">
+                  <b-field>
+                    <template #label>
+                      <div class="plot-axis">
+                        <span>{{$t("qualitativeParameter")}}</span>
+                      </div>
+                    </template>
+                    <b-select v-if="plot.type == 'pie'" v-model="plot.x" :placeholder="$t('plot.selectparam')" expanded>
+                      <option v-for="(param, paramIndex) of selectedParameters" :key="paramIndex" :value="param.name">
+                        {{ $t(`planeparams.${param.name}`) }}
+                      </option>
+                      <option v-for="(custom, customIndex) of customParams" :key="'custom-' + customIndex"
+                        :value="custom.name">
+                        {{ custom.name }}
+                      </option>
+                    </b-select>
+                  </b-field>
+                </div>
               </div>
             </div>
           </div>
@@ -382,13 +274,10 @@
       </div>
     </b-modal>
 
-    <CustomParam
-      ref="customParams"
-      v-bind:enabled.sync="isCustomParamModalActive"
-      v-bind:customParams.sync="customParams"
-      v-bind:activeParams="
+    <CustomParam ref="customParams" v-bind:enabled.sync="isCustomParamModalActive"
+      v-bind:customParams.sync="customParams" v-bind:activeParams="
         selectedParameters.filter((e) => e.type == 'number_range')
-      ">
+      " @save="savedCustomParams">
     </CustomParam>
   </div>
 </template>
@@ -437,10 +326,27 @@ export default {
   methods: {
     removeCustomParam(index) {
       this.customParams.splice(index, 1);
+      console.log('REMOVE CUSTOM PARAM');
+      this.updateCustomParams();
+      if (this.columns != 0) {
+        this.generateColumns();
+      }
     },
     selectedParamChanged() {
       setImmediate(() => {
         this.$refs.customParams.ensureParams();
+        this.updateCustomParams();
+        if (this.columns != 0) {
+          this.generateColumns();
+        }
+      });
+    },
+    savedCustomParams() {
+      setImmediate(() => {
+        this.updateCustomParams();
+        if (this.columns != 0) {
+          this.generateColumns();
+        }
       });
     },
     filterClick(e) {
@@ -452,7 +358,7 @@ export default {
       this.planeParameters = planeParameters.parameters.filter((option) => {
         return (
           option.name.toString().toLowerCase().indexOf(text.toLowerCase()) >=
-            0 ||
+          0 ||
           this.$t("planeparams." + option.name)
             .toString()
             .toLowerCase()
@@ -463,6 +369,10 @@ export default {
     removedParameters(tag) {
       this.removeFilter(tag);
       this.plotArr = [];
+      this.updateCustomParams();
+      if (this.columns.length != 0) {
+        this.generateColumns();
+      }
     },
     getFilteredTags_Categories(text) {
       this.planeCategories = planeCategories.categories.filter((option) => {
@@ -504,6 +414,38 @@ export default {
       });
       return filters;
     },
+    updateCustomParams() {
+      for (let i = 0; i < this.planeData.length; i++) {
+        for (var custom of this.customParams) {
+          var refData = {};
+          for (var ref of custom.refs) {
+            refData[ref.name] = this.planeData[i][ref.ref.name];
+          }
+          var value = custom.code.evaluate(refData);
+          this.planeData[i][custom.name] = parseFloat(
+            parseFloat(value).toFixed(2)
+          ); //CHANGE
+        }
+      }
+    },
+    parsePlaneData() {
+      var data = this.$store.getters.getPlaneList;
+      this.planeData = Array(data.length)
+        .fill(0)
+        .map((_, i) => {
+          return Object.assign({}, data[i]);
+        });
+      this.planeData.forEach((el) => {
+        for (let key of this.planeParameters) {
+          el[key.name] = this.$store.getters.convertVale(
+            key.name,
+            el[key.name]
+          );
+        }
+      });
+      this.updateCustomParams();
+      this.checkedRows = this.planeData;
+    },
     search() {
       this.planeData = [];
       this.checkedRows = [];
@@ -516,31 +458,18 @@ export default {
         },
       })
         .then((e) => {
-          this.planeData = e.data;
-          this.planeData.forEach((el) => {
-            for (let key of this.selectedParameters) {
-              el[key.name] = this.$store.getters.convertVale(
-                key.name,
-                el[key.name]
-              );
-            }
-          });
-          for (let i = 0; i < this.planeData.length; i++) {
-            for (var custom of this.customParams) {
-              var refData = {};
-              for (var ref of custom.refs) {
-                refData[ref.name] = this.planeData[i][ref.ref.name];
-              }
-              var value = custom.code.evaluate(refData);
-              this.planeData[i][custom.name] = parseFloat(value).toFixed(2);
-            }
-          }
-          this.checkedRows = this.planeData;
+          this.$store.commit("setPlaneList", e.data);
+          this.parsePlaneData();
         })
-        .catch(() => {})
+        .catch(() => {
+          this.toast(this.$t("serverError"));
+        })
         .finally(() => {
           this.isTableLoading = false;
         });
+      this.generateColumns();
+    },
+    generateColumns() {
       this.columns = [
         {
           field: "name",
@@ -549,9 +478,8 @@ export default {
         ...this.selectedParameters.map((el) => {
           return {
             field: el.name,
-            label: `${this.$t(`planeparams.${el.name}`)}${
-              el.unit ? ` [${el.unit}]` : ""
-            }`,
+            label: `${this.$t(`planeparams.${el.name}`)}${el.unit ? ` [${el.unit}]` : ""
+              }`,
           };
         }),
         ...this.customParams.map((el) => {
@@ -601,6 +529,14 @@ export default {
 
       this.readyToPlot = [];
       this.plotArr.forEach((plot, plotIndex) => {
+        if (plot.type === "bar") {
+          plot.x = "disable";
+        }
+
+        if (plot.type === 'pie') {
+          plot.y = 'disable';
+        }
+
         if (!plot.x || !plot.y) {
           this.toast(
             `${this.$t("plot.undefined")} ${plotIndex + 1}`,
@@ -611,10 +547,12 @@ export default {
 
         let x =
           this.selectedParameters.find((el) => el.name === plot.x) ||
-          this.customParams.find((el) => el.name === plot.x);
+          this.customParams.find((el) => el.name === plot.x) ||
+          plot.x === "disable";
         let y =
           this.selectedParameters.find((el) => el.name === plot.y) ||
-          this.customParams.find((el) => el.name === plot.y);
+          this.customParams.find((el) => el.name === plot.y) ||
+          plot.y === "disable";
 
         if (!x || !y) {
           this.toast(
@@ -643,11 +581,17 @@ export default {
           if (!this.$refs[`plot-${i}`]) return;
           this.$refs[`plot-${i}`][0].draw();
         }
+        this.$refs[`plot-${this.readyToPlot.length - 1}`][0].$el.scrollIntoView(
+          {
+            behavior: "smooth",
+            block: "end",
+          }
+        );
       });
     },
     plotTypeInput(i) {
       var plotObj = this.plotArr[i];
-      if (plotObj.type == "column") {
+      if (plotObj.type == "bar") {
         plotObj.x = "name";
       }
     },
@@ -732,7 +676,7 @@ export default {
       width: 120px;
     }
 
-    .buttonsList > :last-child {
+    .buttonsList> :last-child {
       margin-left: auto;
     }
 
@@ -767,7 +711,7 @@ export default {
     margin-bottom: 1rem;
   }
 
-  & > .title {
+  &>.title {
     text-align: center;
   }
 }
@@ -821,6 +765,28 @@ export default {
       width: 30%;
     }
   }
+
+  & .plotParams1 {
+    display: flex;
+    width: 70%;
+    flex-direction: row;
+    justify-content: space-evenly;
+
+    :deep(.field) {
+      width: 40% !important;
+    }
+  }
+
+  & .plotParams2 {
+    display: flex;
+    width: 70%;
+    flex-direction: row;
+    justify-content: space-evenly;
+
+    :deep(.field) {
+      width: 60% !important;
+    }
+  }
 }
 
 .planeTable {
@@ -838,7 +804,7 @@ export default {
     flex-wrap: nowrap;
     align-items: flex-start;
 
-    & > :not(:last-child) {
+    &> :not(:last-child) {
       margin-right: 10px;
     }
   }
@@ -858,7 +824,7 @@ export default {
   flex-wrap: wrap;
   width: 100%;
 
-  & > span {
+  &>span {
     margin-right: 10px;
   }
 

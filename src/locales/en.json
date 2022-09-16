@@ -7,12 +7,16 @@
     "parametersToCompare": "Parameters to compare",
     "scatter": "Scatter",
     "column": "Column",
+    "bar": "Bar",
+    "pie": "Pie",
     "close": "Close",
     "language": "Language",
     "languageList": {
         "en": "English",
         "pt-br": "Portuguese (Brazil)"
     },
+    "serverError": "Internal Server Error",
+    "qualitativeParameter": "Qualitative Parameter",
     "customparams": "Custom Parameters",
     "save": "Save",
     "search.addatag": "Add a tag",

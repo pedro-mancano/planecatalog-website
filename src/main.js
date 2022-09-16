@@ -11,9 +11,10 @@ const production = process.env.NODE_ENV === 'production';
 
 /*
 TODO List:
-- Pizza Graph
+- Pizza Graph -> (Finished - Testing)
 - Add custom units
 - Download data (table & plots) as CSV / JSON / XML / PDF / PNG / XLSX
+- Clone Plane Data into Vuex
 */
 
 Vue.use(VueAxios, axios)

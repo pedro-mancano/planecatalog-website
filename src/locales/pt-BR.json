@@ -7,12 +7,16 @@
     "parametersToCompare": "Parâmetros para Comparar",
     "scatter": "Dispersão",
     "column": "Colunas",
+    "bar": "Barras",
+    "pie": "Pizza",
     "close": "Fechar",
     "language": "Idioma",
     "languageList": {
         "en": "Inglês",
         "pt-br": "Português"
     },
+    "serverError": "Erro do servidor",
+    "qualitativeParameter": "Parâmetro Qualitativo",
     "customparams": "Parâmetros Personalizados",
     "save": "Salvar",
     "search.addatag": "Adicione uma tag",
