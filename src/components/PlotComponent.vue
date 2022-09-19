@@ -28,7 +28,7 @@ export default {
       units: [],
     };
   },
-  props: ["data", "type", "options", "log-scale", "selectedParams"],
+  props: ["data", "type", "options", "log-scale", "selectedParams", "plotRef"],
   created() {
     ChartJS.Chart.register(...ChartJS.registerables);
   },
@@ -42,7 +42,7 @@ export default {
     this.ctx = this.$refs.canv.getContext("2d");
     this.draw();
   },
-  unmonutted() {
+  unmounted() {
     if (this.currentChart) {
       this.currentChart.destroy();
     }
@@ -104,6 +104,9 @@ export default {
         case "pie":
           this.drawTypePie();
           break;
+        case "bar-multi":
+          this.drawTypeBarsMulti();
+          break;
       }
     },
     betterTranslate(text) {
@@ -111,6 +114,54 @@ export default {
       return search.custom
         ? search.name
         : this.$t("planeparams." + search.name);
+    },
+    drawTypeBarsMulti() {
+      this.currentChart = new ChartJS.Chart(this.ctx, {
+        type: "bar",
+        data: {
+          labels: this.data.map((d) => d.name),
+          datasets: this.plotRef.ys.map((ref, i) => {
+            return {
+              label: this.betterTranslate(ref.name),
+              data: this.data.map((d) => d[ref.name]),
+              backgroundColor: this.generateColorForIndex(i),
+              borderColor: this.generateColorForIndex(i),
+              borderWidth: 1,
+            };
+          })
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              type: this.getScale(1),
+              title: {
+                display: false,
+                text: this.plotRef.ys.map((ref) => `${this.betterTranslate(ref.name)} ${ref.unit ? `[${ref.unit}]` : ""}`),
+                align: "start",
+                padding: {
+                  right: 40,
+                }
+              },
+            },
+          },
+          plugins: {
+            title: {
+              display: false,
+              text: this.plotRef.ys.map((ref) => `${this.betterTranslate(ref.name)} ${ref.unit ? `[${ref.unit}]` : ""}`),
+            },
+            legend: {
+              display: true,
+              position: "top",
+              align: "start",
+              labels: {
+                usePointStyle: true,
+                pointStyle: "rect",
+              },
+            },
+          },
+        },
+      });
     },
     drawTypePie() {
 
@@ -158,6 +209,12 @@ export default {
             },
             legend: {
               position: "top",
+              display: true,
+              align: "start",
+              labels: {
+                usePointStyle: true,
+                pointStyle: "rect",
+              },
             },
             title: {
               display: true,

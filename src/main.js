@@ -26,8 +26,9 @@ Vue.config.productionTip = false;
 
 Vue.prototype.$production = production
 Vue.prototype.$backend = production ? 'https://planecompare.pedromancano.xyz' : 'http://localhost:3000';
+Vue.prototype.$backend_fallback = production ? 'http://localhost:3000' : 'https://planecompare.pedromancano.xyz';
 
-console.log(process.env.NODE_ENV)
+console.log(process.env.NODE_ENV);
 /**
  * PLANE COMPARE
  */

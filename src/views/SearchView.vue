@@ -77,8 +77,8 @@
 
     <div v-if="showPlots" class="plots" ref="plots">
       <PlotComponent v-for="(plot, index) in readyToPlot" :key="index" :data="checkedRows" :type="plot.type"
-        :options="[plot.x, plot.y]" :log-scale="plot.log" :selectedParams="selectedParameters.concat(customParams)"
-        :ref="`plot-${index}`">
+        :options="[plot.x, plot.y]" :plotRef="plot" :log-scale="plot.log"
+        :selectedParams="selectedParameters.concat(customParams)" :ref="`plot-${index}`">
       </PlotComponent>
     </div>
 
@@ -194,8 +194,9 @@
                   <b-select v-model="plot.type" :placeholder="$t('plot.selecttype')" @input="plotTypeInput(plotIndex)"
                     expanded>
                     <option value="scatter">{{ $t("scatter") }}</option>
-                    <option value="bar">{{ $t("bar") }}</option>
                     <option value="pie">{{ $t("pie") }}</option>
+                    <option value="bar">{{ $t("bar") }}</option>
+                    <option value="bar-multi">{{ $t("bar-multi")}}</option>
                   </b-select>
                 </b-field>
                 <div v-if="plot.type == 'scatter' || plot.type == 'bar'" class="plotParams1">
@@ -250,7 +251,7 @@
                         <span>{{$t("qualitativeParameter")}}</span>
                       </div>
                     </template>
-                    <b-select v-if="plot.type == 'pie'" v-model="plot.x" :placeholder="$t('plot.selectparam')" expanded>
+                    <b-select v-model="plot.x" :placeholder="$t('plot.selectparam')" expanded>
                       <option v-for="(param, paramIndex) of selectedParameters" :key="paramIndex" :value="param.name">
                         {{ $t(`planeparams.${param.name}`) }}
                       </option>
@@ -259,6 +260,32 @@
                         {{ custom.name }}
                       </option>
                     </b-select>
+                  </b-field>
+                </div>
+                <div v-if="plot.type == 'bar-multi'" class="plotParams3">
+                  <b-field>
+                    <template #label>
+                      <div class="plot-axis">
+                        <span>{{$t("plot.selectparams")}}</span>
+                      </div>
+                    </template>
+
+                    <b-taginput ref="plotTagInputParams" v-model="plot.ys"
+                      :data="selectedParameters.concat(customParams)" autocomplete :allow-new="false" open-on-focus
+                      icon="tag" field="name" :placeholder="$t('search.addatag')" @typing="getFilteredTags_Parameters">
+                      <template slot-scope="props">
+                        <span>{{ props.option.custom ? props.option.name : $t(`planeparams.${props.option.name}`) }}
+                          <b-icon size="is-small" type="is-success" icon="check"
+                            v-if="plot.ys?.indexOf(props.option) >= 0"></b-icon>
+                        </span>
+                      </template>
+                      <template #selected="props">
+                        <b-tag v-for="(tag, index) in props.tags" :key="index" type="is-primary" rounded
+                          :tabstop="false" ellipsis closable @close="plot.ys.splice(index, 1)">
+                          {{ tag.custom ? tag.name : $t("planeparams." + tag.name) }}
+                        </b-tag>
+                      </template>
+                    </b-taginput>
                   </b-field>
                 </div>
               </div>
@@ -445,27 +472,36 @@ export default {
       this.updateCustomParams();
       this.checkedRows = this.planeData;
     },
+    getPlaneData(fallback) {
+      new Promise((resolve) => {
+        this.axios({
+          url: (fallback ? this.$backend_fallback : this.$backend) + "/plane/query",
+          method: "POST",
+          data: {
+            filter: this.parseFilterListToServer(),
+          },
+        }).then((e) => {
+          this.$store.commit("setPlaneList", e.data);
+          this.parsePlaneData();
+        }).catch(() => {
+          if (!fallback && !this.$production) {
+            this.getPlaneData(true);
+          } else {
+            this.toast(this.$t("serverError"));
+          }
+        }).finally(() => {
+          if (!fallback) {
+            this.isTableLoading = false;
+          }
+          resolve();
+        });
+      });
+    },
     search() {
       this.planeData = [];
       this.checkedRows = [];
       this.isTableLoading = true;
-      this.axios({
-        url: this.$backend + "/plane/query",
-        method: "POST",
-        data: {
-          filter: this.parseFilterListToServer(),
-        },
-      })
-        .then((e) => {
-          this.$store.commit("setPlaneList", e.data);
-          this.parsePlaneData();
-        })
-        .catch(() => {
-          this.toast(this.$t("serverError"));
-        })
-        .finally(() => {
-          this.isTableLoading = false;
-        });
+      this.getPlaneData(false);
       this.generateColumns();
     },
     generateColumns() {
@@ -528,12 +564,16 @@ export default {
 
       this.readyToPlot = [];
       this.plotArr.forEach((plot, plotIndex) => {
-        if (plot.type === "bar") {
+        if (plot.type === "bar" || plot.type === "bar-multi") {
           plot.x = "disable";
         }
 
-        if (plot.type === 'pie') {
-          plot.y = 'disable';
+        if (plot.type === "bar-multi") {
+          plot.y = "disable";
+        }
+
+        if (plot.type === "pie") {
+          plot.y = "disable";
         }
 
         if (!plot.x || !plot.y) {
@@ -564,10 +604,8 @@ export default {
         }
 
         this.readyToPlot.push({
-          type: plot.type.trim(),
-          x: plot.x.trim(),
-          y: plot.y.trim(),
           log: [plot.logX, plot.logY],
+          ...plot,
         });
       });
       this.showPlots = true;
@@ -746,7 +784,8 @@ export default {
 
 .plotArr {
   margin-top: 25px;
-  overflow: auto;
+  position: relative;
+  overflow: auto; //CHANGE IT LATTER
 
   & .plotItem:not(:last-child) {
     margin-bottom: 15px;
@@ -784,6 +823,27 @@ export default {
 
     :deep(.field) {
       width: 60% !important;
+    }
+  }
+
+  & .plotParams3 {
+    display: flex;
+    width: 70%;
+    flex-direction: row;
+    justify-content: space-evenly;
+
+    :deep(.dropdown-menu) {
+      position: absolute;
+    }
+
+    :deep(.dropdown-content) {
+      position: fixed;
+    }
+
+    :deep(.field) {
+      overflow: hidden;
+      margin-left: 20px;
+      width: 100% !important;
     }
   }
 }
