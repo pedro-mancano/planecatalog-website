@@ -210,7 +210,7 @@
                     <b-select v-if="plot.type == 'scatter'" v-model="plot.x" :placeholder="$t('plot.selectparam')"
                       expanded>
                       <option v-for="(param, paramIndex) of selectedParameters.filter(
-                        (i) => i.name != plot.y
+                        (i) => i.name != plot.y && i.type.includes('number')
                       )" :key="paramIndex" :value="param.name">
                         {{ $t(`planeparams.${param.name}`) }}
                       </option>
@@ -232,12 +232,12 @@
                     </template>
                     <b-select v-model="plot.y" :placeholder="$t('plot.selectparam')" expanded>
                       <option v-for="(param, paramIndex) of selectedParameters.filter(
-                        (i) => i.name != plot.x
+                        (i) => i.name != plot.x && i.type.includes('number')
                       )" :key="paramIndex" :value="param.name">
                         {{ $t(`planeparams.${param.name}`) }}
                       </option>
                       <option v-for="(custom, customIndex) of customParams.filter(
-                        (i) => i.name != plot.x
+                        (i) => i.name != plot.x 
                       )" :key="'custom-' + customIndex" :value="custom.name">
                         {{ custom.name }}
                       </option>
@@ -271,8 +271,9 @@
                     </template>
 
                     <b-taginput ref="plotTagInputParams" v-model="plot.ys"
-                      :data="selectedParameters.concat(customParams)" autocomplete :allow-new="false" open-on-focus
-                      icon="tag" field="name" :placeholder="$t('search.addatag')" @typing="getFilteredTags_Parameters">
+                      :data="selectedParameters.filter((i)=>i.type.includes('number')).concat(customParams)"
+                      autocomplete :allow-new="false" open-on-focus icon="tag" field="name"
+                      :placeholder="$t('search.addatag')" @typing="getFilteredTags_Parameters">
                       <template slot-scope="props">
                         <span>{{ props.option.custom ? props.option.name : $t(`planeparams.${props.option.name}`) }}
                           <b-icon size="is-small" type="is-success" icon="check"
@@ -454,7 +455,7 @@ export default {
         }
       }
     },
-    parsePlaneData() {
+    parsePlaneData() { //Parse current plane data to be used in table and other components
       var data = this.$store.getters.getPlaneList;
       this.planeData = Array(data.length)
         .fill(0)
@@ -463,10 +464,18 @@ export default {
         });
       this.planeData.forEach((el) => {
         for (let key of this.planeParameters) {
-          el[key.name] = this.$store.getters.convertVale(
-            key.name,
-            el[key.name]
-          );
+          if (key.type == "number_range") { //Convert numbers units
+            el[key.name] = this.$store.getters.convertValue(
+              key.name,
+              el[key.name]
+            );
+          } else if (key.type == "select") { //Translate select values
+            if (el[key.name] == '' || el[key.name] == null) {
+              el[key.name] = this.$t('unknown');
+            } else {
+              el[key.name] = this.$t(`planeparams.${key.name}List.${el[key.name]}`);
+            }
+          }
         }
       });
       this.updateCustomParams();

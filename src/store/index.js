@@ -49,8 +49,8 @@ export default new Vuex.Store({
     getUnit: state => unitName => {
       return state.unitList[unitName];
     },
-    convertVale: state => (unitName, value) => {
-      console.log(unitName, value);
+    convertValue: state => (unitName, value) => {
+      //console.log(unitName, value); //CHANGE
       return state.unitList[state.currentUnit].parameters[unitName].func(value);
     },
     getPlaneList: state => {

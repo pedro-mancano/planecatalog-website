@@ -24,10 +24,12 @@ Vue.use(Buefy, {
 Vue.config.productionTip = false;
 
 Vue.prototype.$production = production
-Vue.prototype.$backend = production ? 'https://planecompare.pedromancano.xyz' : 'http://localhost:3000';
-Vue.prototype.$backend_fallback = production ? 'http://localhost:3000' : 'https://planecompare.pedromancano.xyz';
+Vue.prototype.$backend = production ? 'https://pcs.pedromancano.xyz' : 'http://localhost:3000';
+Vue.prototype.$backend_fallback = production ? 'http://localhost:3000' : 'https://pcs.pedromancano.xyz';
 
-console.log(process.env.NODE_ENV);
+if (!production) {
+  console.log(process.env.NODE_ENV);
+}
 /**
  * PLANE COMPARE
  */
