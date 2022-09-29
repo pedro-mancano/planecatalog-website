@@ -1,6 +1,9 @@
 <template>
   <div id="app">
     <router-view />
+    <div v-if="!$production" class="devWarning">
+      <p>Development Version</p>
+    </div>
   </div>
 </template>
 
@@ -9,6 +12,22 @@ html,
 body {
   overflow-y: hidden !important;
   height: 100%;
+}
+
+.devWarning {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #ff0000;
+  color: #ffffff;
+  text-align: center;
+  font-size: 12px;
+  z-index: 9999;
+}
+
+.devWarning:hover {
+  opacity: 0;
 }
 
 #app {
