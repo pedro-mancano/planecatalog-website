@@ -35,7 +35,7 @@
             </b-dropdown-item>
 
             <b-dropdown-item custom aria-role="listitem">
-              <b-button :label="$t('createunit')" type="is-primary" expanded />
+              <b-button :label="$t('createunit')" @click="unitChange" type="is-primary" expanded />
             </b-dropdown-item>
           </b-dropdown>
         </div>
@@ -137,12 +137,21 @@ export default {
     },
     changeLanguage(language) {
       this.$store.commit("setLanguage", language);
+      this.$root.$emit("languageChanged");
     },
     isMobile() {
       return window.innerWidth < 768;
     },
     toggleSidebar() {
       this.scrollbarActiveMobile = !this.scrollbarActiveMobile;
+    },
+    unitChange() {
+      this.$buefy.toast.open({
+        duration: 5000,
+        message: `${this.$t("wip")}`,
+        position: "is-bottom",
+        type: `is-warning`,
+      });
     },
   },
 };

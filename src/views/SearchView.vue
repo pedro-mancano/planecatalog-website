@@ -677,6 +677,17 @@ export default {
       XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
       XLSX.writeFile(workbook, "data.xlsx");
     },
+    languageChanged(){
+      this.parsePlaneData();
+      this.generateColumns();
+    }
+  },
+  created() {
+    //register event listener for $root 
+    this.$root.$on("languageChanged", this.languageChanged);
+  },
+  beforeDestroy() {
+    this.$root.$off("languageChanged", this.languageChanged);
   },
 };
 </script>
@@ -690,9 +701,13 @@ export default {
   & .filterContent {
     display: flex;
     flex-direction: column;
-    max-width: 380px;
-    width: 380px;
+    max-width: 400px;
+    width: 400px;
     margin-bottom: 28px;
+
+    .taginput {
+      width: 100%;
+    }
 
     .searchButton {
       margin-bottom: 10px;
@@ -724,6 +739,18 @@ export default {
 
     .buttonsList> :last-child {
       margin-left: auto;
+    }
+
+    @media (max-width: 768px) {
+      .buttonsList {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .buttonsList> :last-child {
+        margin-top: 10px;
+        margin-left: 0;
+      }
     }
 
     .taginput {
