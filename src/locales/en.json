@@ -12,6 +12,8 @@
     "pie": "Pie",
     "close": "Close",
     "wip": "Work in progress",
+    "empty": "Empty",
+    "loadMore": "Load more",
     "language": "Language",
     "languageList": {
         "en": "English",

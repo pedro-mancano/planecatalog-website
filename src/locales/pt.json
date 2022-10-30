@@ -12,6 +12,8 @@
     "pie": "Pizza",
     "close": "Fechar",
     "wip": "Em Construção",
+    "empty": "Vazio",
+    "loadMore": "Carregar Mais",
     "language": "Idioma",
     "languageList": {
         "en": "English",
