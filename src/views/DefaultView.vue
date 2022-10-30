@@ -47,7 +47,6 @@
                 type="is-primary is-light"
                 icon-left="language"
                 expanded>
-                <span>Hdajdajskdla</span>
               </b-button>
             </template>
 
@@ -55,7 +54,10 @@
               v-for="(language, languageIndex) in languages"
               :key="languageIndex"
               @click="changeLanguage(language)">
-              {{ language }}
+              <div class="languageSelect">
+                <img class="languageSelectImg" :src="require(`@/assets/flags/${language}.svg`)" :alt="language"/>
+                <span>{{ $t(`languageList.${language}`) }}</span>
+              </div>
             </b-dropdown-item>
           </b-dropdown>
         </div>
@@ -186,6 +188,17 @@ export default {
 
 :deep(button > span:is(.icon)) {
   margin-left: calc(-0.5em + 1px) !important;
+}
+
+.languageSelect {
+  display: flex;
+  align-items: center;
+  & .languageSelectImg{
+    height: 25px;
+    width: auto;
+    margin-right: 10px;
+    min-width: 40px;
+  }
 }
 
 .sidebar {

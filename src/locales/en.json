@@ -15,7 +15,7 @@
     "language": "Language",
     "languageList": {
         "en": "English",
-        "pt-br": "Portuguese (Brazil)"
+        "pt": "Português"
     },
     "serverError": "Internal Server Error",
     "qualitativeParameter": "Qualitative Parameter",

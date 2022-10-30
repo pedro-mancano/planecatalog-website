@@ -14,8 +14,8 @@
     "wip": "Em Construção",
     "language": "Idioma",
     "languageList": {
-        "en": "Inglês",
-        "pt-br": "Português"
+        "en": "English",
+        "pt": "Português"
     },
     "serverError": "Erro do servidor",
     "qualitativeParameter": "Parâmetro Qualitativo",

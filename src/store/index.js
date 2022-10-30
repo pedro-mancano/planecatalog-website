@@ -18,7 +18,7 @@ function convertLanguage(language) {
     case 'en':
       return 'en';
     case 'pt':
-      return 'pt-BR';
+      return 'pt';
     default:
       return 'en';
   }
