@@ -79,6 +79,9 @@ export default new Vuex.Store({
     },
     setPlaneList(state, payload) {
       state.planeList = payload;
+    },
+    clearPlaneList(state) {
+      state.planeList = [];
     }
   },
   actions: {

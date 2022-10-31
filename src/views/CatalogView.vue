@@ -22,21 +22,14 @@
         </div>
         <section>
             <b-table class="customTableFlex" :data="planeList" :columns="columns" narrowed hoverable paginated
-                pagination-simple :loading="loading">
+                pagination-simple :loading="loading" :per-page="10" :total="count" :backend-pagination="true"
+                @page-change="pageChanged">
 
                 <template #empty>
                     <div class="has-text-centered">
                         <b-icon icon="box-open" size="is-large" type="is-primary">
                         </b-icon>
                         <p>{{ $t('empty') }}</p>
-                    </div>
-                </template>
-
-                <template #footer>
-                    <div class="table-footer">
-                        <b-button type="is-primary">
-                            {{ $t('loadMore') }}
-                        </b-button>
                     </div>
                 </template>
 
@@ -64,10 +57,41 @@ export default {
             }),
             selectedParameters: [],
             columns: [],
-            total: -1,
+            count: -1,
+            page: 1,
         };
     },
     methods: {
+        parsePlaneData() { //Parse current plane data to be used in table and other components
+            var data = this.$store.getters.getPlaneList;
+            this.planeList = Array(data.length)
+                .fill(0)
+                .map((_, i) => {
+                    return Object.assign({}, data[i]);
+                });
+            this.planeList.forEach((el) => {
+                for (let key of this.planeParameters) {
+                    if (key.type == "number_range") { //Convert numbers units
+                        el[key.name] = this.$store.getters.convertValue(
+                            key.name,
+                            el[key.name]
+                        );
+                    } else if (key.type == "select") { //Translate select values
+                        if (el[key.name] == '' || el[key.name] == null) {
+                            el[key.name] = this.$t('unknown');
+                        } else {
+                            el[key.name] = this.$t(`planeparams.${key.name}List.${el[key.name]}`);
+                        }
+                    }
+                }
+            });
+            this.checkedRows = this.planeList;
+        },
+        pageChanged(page) {
+            this.page = page;
+            this.skip = (page - 1) * 10;
+            this.loadPlaneList();
+        },
         getFilteredTags_Parameters(text) {
             this.planeParameters = planeParameters.parameters.filter((option) => {
                 return (
@@ -101,6 +125,7 @@ export default {
         },
         loadPlaneList(fallback) {
             this.loadColumns();
+            this.loading = true;
             this.axios({
                 url: (fallback ? this.$backend_fallback : this.$backend) + "/plane/all",
                 method: "POST",
@@ -108,9 +133,10 @@ export default {
                     skip: this.skip
                 },
             }).then((resp) => {
-                this.planeList = resp.data.planes;
+                this.$store.commit("setPlaneList", resp.data.planes);
                 this.count = resp.data.count;
                 this.loading = false;
+                this.parsePlaneData();
             }).catch(async () => {
                 if (!this.$production) {
                     this.loadPlaneList(true);

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import DefaultView from '../views/DefaultView.vue'
+import VueStore from '../store/index.js'
 
 Vue.use(VueRouter)
 
@@ -35,5 +36,10 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  VueStore.commit('clearPlaneList');
+  next()
+});
 
 export default router

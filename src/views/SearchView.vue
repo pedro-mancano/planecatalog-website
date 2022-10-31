@@ -32,16 +32,14 @@
       <div class="buttonsList">
         <b-button type="is-primary is-light" @click="openFilterModal" icon-left="filter">
           {{
-          `${$t("filters")} ${
-          filtersList.length > 0 ? `(${filtersList.length})` : ""
-          }`
+              `${$t("filters")} ${filtersList.length > 0 ? `(${filtersList.length})` : ""
+              }`
           }}
         </b-button>
         <b-button type="is-primary is-light" @click="openCustomParamModal">
           {{
-          `${$t("customparams")} ${
-          customParams.length > 0 ? `(${customParams.length})` : ""
-          }`
+              `${$t("customparams")} ${customParams.length > 0 ? `(${customParams.length})` : ""
+              }`
           }}
         </b-button>
       </div>
@@ -52,25 +50,31 @@
     </div>
 
     <div class="planeTable" v-if="columns.length > 0">
-      <b-table :data="planeData" :columns="columns" :checked-rows.sync="checkedRows" :loading="isTableLoading"
-        checkable>
+      <b-table :data="planeData" :columns="columns" :checked-rows.sync="checkedRows" :loading="isTableLoading" paginated
+        :per-page="10" pagination-simple checkable>
         <template #bottom-left>
           <!--b>Total checked</b>: {{ checkedRows.length }} <div-->
+        </template>
+        <template #empty>
+          <div class="has-text-centered">
+            <b-icon icon="box-open" size="is-large" type="is-primary">
+            </b-icon>
+            <p>{{ $t('empty') }}</p>
+          </div>
         </template>
       </b-table>
       <div class="plotButtons">
         <b-button type="is-primary is-light" @click="downloadTable">{{
-        $t("search.download")
+            $t("search.download")
         }}</b-button>
         <b-button type="is-primary is-light" @click="plotModal">
           {{
-          `${$t("search.plotconfig")} ${
-          plotArr.length > 0 ? `(${plotArr.length})` : ""
-          }`
+              `${$t("search.plotconfig")} ${plotArr.length > 0 ? `(${plotArr.length})` : ""
+              }`
           }}
         </b-button>
         <b-button type="is-primary" @click="plot">{{
-        $t("search.plot")
+            $t("search.plot")
         }}</b-button>
       </div>
     </div>
@@ -114,9 +118,8 @@
               <div v-if="tag.type == 'number'">
                 <b-field :message="
                   tag.unit
-                    ? `${$t('search.unitin')}: ${
-                        $t('units')[tag.unit.trim()]
-                      }`
+                    ? `${$t('search.unitin')}: ${$t('units')[tag.unit.trim()]
+                    }`
                     : ''
                 ">
                   <template #label>
@@ -134,9 +137,8 @@
               <div v-if="tag.type == 'number_range'">
                 <b-field :message="
                   tag.unit
-                    ? `${$t('search.unitin')}: ${
-                        $t('units')[tag.unit.trim()]
-                      }`
+                    ? `${$t('search.unitin')}: ${$t('units')[tag.unit.trim()]
+                    }`
                     : ''
                 ">
                   <template #label>
@@ -196,7 +198,7 @@
                     <option value="scatter">{{ $t("scatter") }}</option>
                     <option value="pie">{{ $t("pie") }}</option>
                     <option value="bar">{{ $t("bar") }}</option>
-                    <option value="bar-multi">{{ $t("bar-multi")}}</option>
+                    <option value="bar-multi">{{ $t("bar-multi") }}</option>
                   </b-select>
                 </b-field>
                 <div v-if="plot.type == 'scatter' || plot.type == 'bar'" class="plotParams1">
@@ -237,7 +239,7 @@
                         {{ $t(`planeparams.${param.name}`) }}
                       </option>
                       <option v-for="(custom, customIndex) of customParams.filter(
-                        (i) => i.name != plot.x 
+                        (i) => i.name != plot.x
                       )" :key="'custom-' + customIndex" :value="custom.name">
                         {{ custom.name }}
                       </option>
@@ -248,7 +250,7 @@
                   <b-field>
                     <template #label>
                       <div class="plot-axis">
-                        <span>{{$t("qualitativeParameter")}}</span>
+                        <span>{{ $t("qualitativeParameter") }}</span>
                       </div>
                     </template>
                     <b-select v-model="plot.x" :placeholder="$t('plot.selectparam')" expanded>
@@ -266,12 +268,12 @@
                   <b-field>
                     <template #label>
                       <div class="plot-axis">
-                        <span>{{$t("plot.selectparams")}}</span>
+                        <span>{{ $t("plot.selectparams") }}</span>
                       </div>
                     </template>
 
                     <b-taginput ref="plotTagInputParams" v-model="plot.ys"
-                      :data="selectedParameters.filter((i)=>i.type.includes('number')).concat(customParams)"
+                      :data="selectedParameters.filter((i) => i.type.includes('number')).concat(customParams)"
                       autocomplete :allow-new="false" open-on-focus icon="tag" field="name"
                       :placeholder="$t('search.addatag')" @typing="getFilteredTags_Parameters">
                       <template slot-scope="props">
@@ -677,7 +679,7 @@ export default {
       XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
       XLSX.writeFile(workbook, "data.xlsx");
     },
-    languageChanged(){
+    languageChanged() {
       this.parsePlaneData();
       this.generateColumns();
     }
