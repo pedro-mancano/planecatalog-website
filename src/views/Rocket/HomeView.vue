@@ -1,13 +1,12 @@
 <template>
   <div class="home">
-    <img alt="Logo" class="logo" src="../assets/logo.png">
+    <img alt="Logo" class="logo" src="@/assets/rocket_logo.png">
   </div>
 </template>
 
 <script>
 
 export default {
-  name: 'HomeView',
   components: {
   }
 }

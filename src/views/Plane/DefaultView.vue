@@ -1,18 +1,11 @@
 <template>
   <div id="content">
-    <div
-      :class="`sidebar ${
-        scrollbarActiveMobile ? 'sidebar-active-mobile' : ''
-      }`">
-      <img alt="Logo" class="logo" src="../assets/logo.png" />
+    <div :class="`sidebar ${scrollbarActiveMobile ? 'sidebar-active-mobile' : ''
+    }`">
+      <img alt="Logo" class="logo" src="@/assets/plane_logo.png" />
 
-      <b-button
-        v-for="(item, index) in buttons"
-        :key="index"
-        :type="getButtonType(item.view)"
-        :icon-left="item.icon"
-        @click="goToPage(item.view)"
-        expanded>
+      <b-button v-for="(item, index) in buttons" :key="index" :type="getButtonType(item.view)" :icon-left="item.icon"
+        @click="goToPage(item.view)" expanded>
         {{ $t(item.name) }}
       </b-button>
 
@@ -20,17 +13,11 @@
         <div>
           <b-dropdown aria-role="list" expanded position="is-top-left">
             <template #trigger>
-              <b-button
-                :label="$t('unitofmeasure')"
-                type="is-primary is-light"
-                icon-left="balance-scale-right"
+              <b-button :label="$t('unitofmeasure')" type="is-primary is-light" icon-left="balance-scale-right"
                 expanded />
             </template>
 
-            <b-dropdown-item
-              v-for="(unit, unitIndex) in units"
-              :key="unitIndex"
-              @click="changeUnit(unitIndex)">
+            <b-dropdown-item v-for="(unit, unitIndex) in units" :key="unitIndex" @click="changeUnit(unitIndex)">
               {{ unit.custom ? unit.label : $t(unit.label) }}
             </b-dropdown-item>
 
@@ -42,20 +29,14 @@
         <div>
           <b-dropdown aria-role="list" expanded position="is-top-left">
             <template #trigger>
-              <b-button
-                :label="$t('language')"
-                type="is-primary is-light"
-                icon-left="language"
-                expanded>
+              <b-button :label="$t('language')" type="is-primary is-light" icon-left="language" expanded>
               </b-button>
             </template>
 
-            <b-dropdown-item
-              v-for="(language, languageIndex) in languages"
-              :key="languageIndex"
+            <b-dropdown-item v-for="(language, languageIndex) in languages" :key="languageIndex"
               @click="changeLanguage(language)">
               <div class="languageSelect">
-                <img class="languageSelectImg" :src="require(`@/assets/flags/${language}.svg`)" :alt="language"/>
+                <img class="languageSelectImg" :src="require(`@/assets/flags/${language}.svg`)" :alt="language" />
                 <span>{{ $t(`languageList.${language}`) }}</span>
               </div>
             </b-dropdown-item>
@@ -69,36 +50,35 @@
     </div>
     <div class="view-out">
       <div class="header">
-        <span>{{ $t($route.name.toLocaleLowerCase()) }}</span>
+        <BreadcrumbHeader />
       </div>
       <div class="view">
         <router-view />
       </div>
-      <div
-        class="sidebar-background"
-        v-if="scrollbarActiveMobile"
-        @click="toggleSidebar"></div>
+      <div class="sidebar-background" v-if="scrollbarActiveMobile" @click="toggleSidebar"></div>
     </div>
   </div>
 </template>
 
 <script>
+import BreadcrumbHeader from '../../components/BreadcrumbHeader.vue';
 export default {
+  components: { BreadcrumbHeader },
   data() {
     return {
       buttons: [
         {
-          view: "home",
+          view: "plane.home",
           name: "home",
           icon: "home",
         },
         {
-          view: "search",
+          view: "plane.search",
           name: "search",
           icon: "plane-departure",
         },
         {
-          view: "catalog",
+          view: "plane.catalog",
           name: "catalog",
           icon: "list-ul",
         },
@@ -155,7 +135,7 @@ export default {
         type: `is-warning`,
       });
     },
-  },
+  }
 };
 </script>
 
@@ -193,7 +173,8 @@ export default {
 .languageSelect {
   display: flex;
   align-items: center;
-  & .languageSelectImg{
+
+  & .languageSelectImg {
     height: 25px;
     width: auto;
     margin-right: 10px;
@@ -291,5 +272,50 @@ export default {
 .bottom {
   margin-top: auto;
   width: 100%;
+}
+</style>
+
+<style lang="scss">
+@import "bulma/sass/utilities/functions";
+@import "bulma/sass/utilities/initial-variables";
+@import "./node_modules/buefy/src/scss/utils/_functions.scss";
+
+$primary: #317ada;
+$primary-invert: findColorInvert($primary);
+$primary-light: findLightColor($primary);
+$primary-dark: findDarkColor($primary);
+
+:root {
+  --primary: #{$primary};
+  --primary-invert: #{$primary-invert};
+  --primary-light: #{$primary-light};
+  --primary-dark: #{$primary-dark};
+}
+
+$speed-slow: 150ms !default;
+$speed-slower: 250ms !default;
+
+$info: #167df0 !default;
+
+$input-arrow: $primary !default;
+
+$link: $primary !default;
+$link-invert: $primary-invert !default;
+$link-visited: $grey !default;
+$link-focus-border: $primary !default;
+
+$label-weight: $weight-semibold !default;
+
+@import "buefy/src/scss/utils/_helpers.scss";
+@import "buefy/src/scss/utils/_animations.scss";
+@import "bulma/bulma";
+@import "buefy/src/scss/buefy";
+
+.background-primary {
+  background-color: $primary;
+}
+
+.svg-fill-primary {
+  fill: $primary;
 }
 </style>
