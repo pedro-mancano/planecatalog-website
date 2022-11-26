@@ -6,6 +6,7 @@ import Buefy from 'buefy'
 import i18n from './plugins/vue-i18n'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import './registerServiceWorker'
 
 const production = process.env.NODE_ENV === 'production';
 

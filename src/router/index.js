@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import VueStore from '../store/index.js'
+import VueStore from '@/store/index.js'
+import RootView from '@/views/RootView.vue'
 
 Vue.use(VueRouter)
 
@@ -8,7 +9,7 @@ const routes = [
   {
     path: '/',
     name: 'root',
-    component: () => import('@/views/RootView.vue')
+    component: RootView
   },
   {
     path: '/plane',
