@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
   "name": "Aero Compare",
   "short_name": "AeroCompare",
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#fff",
   "theme_color": "#317ada",
