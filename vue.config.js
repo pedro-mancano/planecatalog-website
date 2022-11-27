@@ -15,9 +15,5 @@ module.exports = defineConfig({
     workboxOptions: {
       swDest: 'service-worker.js',
     },
-  },
-  devServer: {
-    hot: false,
-    liveReload: false
   }
 })

@@ -1,5 +1,7 @@
 {
     "plane": "Plane",
+    "rocket": "Rocket",
+    "satellite": "Satellite",
     "home": "Início",
     "search": "Pesquisar",
     "catalog": "Catalogo",

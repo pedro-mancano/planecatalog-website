@@ -1,7 +1,13 @@
 <template>
-  <div id="content">
+  <div id="content" class="rocket" @touchstart="touchStart" @touchend="touchEnd">
     <div :class="`sidebar ${scrollbarActiveMobile ? 'sidebar-active-mobile' : ''
     }`">
+
+      <div class="goBack" @click="goToPage('root')">
+        <b-icon icon="arrow-left-long">
+        </b-icon>
+      </div>
+
       <img alt="Logo" class="logo" src="@/assets/rocket_logo.png" />
 
       <b-button v-for="(item, index) in buttons" :key="index" :type="getButtonType(item.view)" :icon-left="item.icon"
@@ -83,6 +89,8 @@ export default {
           icon: "list-ul",
         },
       ],
+      touchStartX: 0,
+      touchStartY: 0,
       scrollbarActiveMobile: false,
     };
   },
@@ -98,6 +106,18 @@ export default {
     },
   },
   methods: {
+    touchStart(e) {
+      this.touchStartX = e.changedTouches[0].screenX;
+      this.touchStartY = e.changedTouches[0].screenY;
+    },
+    touchEnd(e) {
+      if (this.touchStartX - e.changedTouches[0].screenX < -100) {
+        this.toggleSidebar();
+      }
+      if (this.touchStartX - e.changedTouches[0].screenX > 100) {
+        this.$router.push({ name: "plane.home" });
+      }
+    },
     changeUnit(unit) {
       this.$store.commit("changeUnit", unit);
     },
@@ -186,6 +206,13 @@ export default {
 }
 
 .sidebar {
+  .goBack {
+    position: absolute;
+    left: 0px;
+    margin-left: 20px;
+    cursor: pointer;
+  }
+
   width: 240px;
   min-width: 240px;
   padding: 20px;
@@ -280,46 +307,48 @@ export default {
 
 
 <style lang="scss">
-@import "bulma/sass/utilities/functions";
-@import "bulma/sass/utilities/initial-variables";
-@import "./node_modules/buefy/src/scss/utils/_functions.scss";
+.rocket {
+  @import "bulma/sass/utilities/functions";
+  @import "bulma/sass/utilities/initial-variables";
+  @import "./node_modules/buefy/src/scss/utils/_functions.scss";
 
-$primary: #f03939;
-$primary-invert: findColorInvert($primary);
-$primary-light: findLightColor($primary);
-$primary-dark: findDarkColor($primary);
+  $primary: #f03939;
+  $primary-invert: findColorInvert($primary);
+  $primary-light: findLightColor($primary);
+  $primary-dark: findDarkColor($primary);
 
-:root {
-  --primary: #{$primary};
-  --primary-invert: #{$primary-invert};
-  --primary-light: #{$primary-light};
-  --primary-dark: #{$primary-dark};
-}
+  :root {
+    --primary: #{$primary};
+    --primary-invert: #{$primary-invert};
+    --primary-light: #{$primary-light};
+    --primary-dark: #{$primary-dark};
+  }
 
-$speed-slow: 150ms !default;
-$speed-slower: 250ms !default;
+  $speed-slow: 150ms !default;
+  $speed-slower: 250ms !default;
 
-$info: #167df0 !default;
+  $info: #167df0 !default;
 
-$input-arrow: $primary !default;
+  $input-arrow: $primary !default;
 
-$link: $primary !default;
-$link-invert: $primary-invert !default;
-$link-visited: $grey !default;
-$link-focus-border: $primary !default;
+  $link: $primary !default;
+  $link-invert: $primary-invert !default;
+  $link-visited: $grey !default;
+  $link-focus-border: $primary !default;
 
-$label-weight: $weight-semibold !default;
+  $label-weight: $weight-semibold !default;
 
-@import "buefy/src/scss/utils/_helpers.scss";
-@import "buefy/src/scss/utils/_animations.scss";
-@import "bulma/bulma";
-@import "buefy/src/scss/buefy";
+  @import "buefy/src/scss/utils/_helpers.scss";
+  @import "buefy/src/scss/utils/_animations.scss";
+  @import "bulma/bulma";
+  @import "buefy/src/scss/buefy";
 
-.background-primary {
-  background-color: $primary;
-}
+  .background-primary {
+    background-color: $primary;
+  }
 
-.svg-fill-primary {
-  fill: $primary;
+  .svg-fill-primary {
+    fill: $primary;
+  }
 }
 </style>
