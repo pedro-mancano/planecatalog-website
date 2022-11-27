@@ -1,11 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "name": "AeroCompare",
+  "name": "Aero Compare",
   "short_name": "AeroCompare",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#fff",
+  "theme_color": "#317ada",
   "description": "Author: Pedro Mançano",
+  "display_override": [
+    "standalone",
+    "fullscreen"
+  ],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=cheeaun.hackerweb"
+    }
+  ],
   "icons": [
     {
       "src": "img/icons/windows11/SmallTile.scale-100.png",
@@ -454,12 +465,6 @@
     {
       "src": "img/icons/ios/1024.png",
       "sizes": "1024x1024"
-    }
-  ],
-  "related_applications": [
-    {
-      "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=cheeaun.hackerweb"
     }
   ]
 }
