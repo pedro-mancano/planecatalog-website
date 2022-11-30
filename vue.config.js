@@ -8,6 +8,8 @@ module.exports = defineConfig({
   //}
   pwa: {
     name: 'Aero Compare',
+    themeColor: '#317ada',
+    msTileColor: '#000000',
     appleMobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: 'black',
     workboxPluginMode: 'GenerateSW',
