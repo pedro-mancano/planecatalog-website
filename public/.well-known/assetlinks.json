@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "xyz.pedromancano.aerocompare",
+      "sha256_cert_fingerprints": [
+        "3A:F5:AD:0D:BC:E9:BE:7E:77:C8:1A:78:64:41:04:61:3D:B3:8C:87:02:F2:5D:BA:90:F5:50:91:C0:62:43:4F"
+      ]
+    }
+  }
+]
