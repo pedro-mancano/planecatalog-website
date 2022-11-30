@@ -9,6 +9,11 @@
   "orientation": "any",
   "theme_color": "#317ada",
   "description": "Author: Pedro Mançano",
+  "dir": "ltr",
+  "lang": "en",
+  "categories": [
+    "education"
+  ],
   "display_override": [
     "standalone",
     "fullscreen"
