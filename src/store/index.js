@@ -64,7 +64,7 @@ export default new Vuex.Store({
       } else if (state.unitList[payload]) {
         state.currentUnit = payload;
       } else {
-        console.error("Unit not found");
+        throw new Error("Invalid unit");
       }
       localStorage.setItem('unit', state.currentUnit);
     },

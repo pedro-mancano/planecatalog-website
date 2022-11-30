@@ -29,6 +29,7 @@ Vue.prototype.$backend = production ? 'https://pcs.pedromancano.xyz' : 'http://l
 Vue.prototype.$backend_fallback = production ? 'http://localhost:3000' : 'https://pcs.pedromancano.xyz';
 
 if (!production) {
+  /* eslint-disable no-console */
   console.log(process.env.NODE_ENV);
 }
 /**

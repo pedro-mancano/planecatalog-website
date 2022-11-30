@@ -2,9 +2,11 @@
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
   "name": "Aero Compare",
   "short_name": "AeroCompare",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": ".",
   "display": "standalone",
   "background_color": "#fff",
+  "orientation": "any",
   "theme_color": "#317ada",
   "description": "Author: Pedro Mançano",
   "display_override": [
@@ -15,6 +17,32 @@
     {
       "platform": "play",
       "url": "https://play.google.com/store/apps/details?id=cheeaun.hackerweb"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Plane Compare",
+      "url": "/plane/",
+      "icons": [
+        {
+          "src": "https://www.gstatic.com/youtube/img/web/shortcuts/subscriptions_512x512.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "any monochrome"
+        }
+      ]
+    },
+    {
+      "name": "Rocket Compare",
+      "url": "/rocket/",
+      "icons": [
+        {
+          "src": "https://www.gstatic.com/youtube/img/web/shortcuts/explore_512x512.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "any monochrome"
+        }
+      ]
     }
   ],
   "icons": [

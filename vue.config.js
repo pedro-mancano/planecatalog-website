@@ -1,4 +1,5 @@
 const { defineConfig } = require('@vue/cli-service')
+const precacheGenerator = require('./src/plugins/precacheGenerator')
 module.exports = defineConfig({
   transpileDependencies: true,
   //chainWebpack: config => {
@@ -6,7 +7,7 @@ module.exports = defineConfig({
   //  config.plugins.delete('preload'); // for CSS
   //}
   pwa: {
-    name: 'My App',
+    name: 'Aero Compare',
     themeColor: '#4DBA87',
     msTileColor: '#000000',
     appleMobileWebAppCapable: 'yes',
@@ -15,5 +16,10 @@ module.exports = defineConfig({
     workboxOptions: {
       swDest: 'service-worker.js',
     },
+  },
+  configureWebpack: {
+    plugins: [
+      new precacheGenerator()
+    ]
   }
 })
